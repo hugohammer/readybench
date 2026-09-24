@@ -27,7 +27,7 @@ Everything else is exploratory and will be reported as such.
 - **Filters:** 500 ≤ rows ≤ 1,000,000 and ≤ 2,000 features, leaving 105 datasets.
 - **Synthetic datasets:** 23 datasets look synthetic or artificial by a name-based heuristic (GAMETES, fri_*, twonorm, madelon, …). The list will be checked by hand in Phase 1. They are excluded from the primary analysis, which leaves about 82 real-world datasets. They are kept for a sensitivity analysis.
 - **Known weakness:** only 15 of the 105 have missing values. Classical quality dimensions vary little in curated benchmarks, so Study A has limited power to test them. Study B covers this. We will report the spread of every quality dimension across the pool.
-- **[DECISION] D1 – extend the pool?** Add about 30–50 real-world binary OpenML datasets with missing values and/or strong imbalance that are not in TabRepo. Their gold standard would come from our own run (section 4b). This makes the pool more representative, at the cost of compute and extra time. *Recommended: yes.*
+- **D1 – extend the pool (decided 2026-09-24: yes).** Add about 30–50 real-world binary OpenML datasets with missing values and/or strong imbalance that are not in TabRepo. Their gold standard would come from our own run (section 4b). This makes the pool more representative, at the cost of compute and extra time. 
 - **De-duplication:** check OpenML dataset IDs and names for the same data listed twice. If found, keep one copy.
 
 ## 4. Gold standard
@@ -35,13 +35,13 @@ Everything else is exploratory and will be reported as such.
 - **(a) Primary:** the test ROC-AUC of AutoGluon (best quality, 4 h, 8 cores; `AutoGluon_bq_4h8c_2023_11_14`), averaged over TabRepo's 3 outer folds (OpenML task folds 0–2).
 - **Secondary gold standard:** per fold, the best TabRepo configuration chosen by *validation* error (so the choice does not peek at the test data), with its test AUC averaged over folds.
 - **Robustness check:** tuned boosted trees only (LightGBM, CatBoost, XGBoost), selected by validation error.
-- **(b) Datasets outside TabRepo (only if D1 = yes):** a fixed recipe on the same OpenML folds 0–2:
+- **(b) Datasets outside TabRepo :** a fixed recipe on the same OpenML folds 0–2:
   - LightGBM and CatBoost with random search of N configurations and inner 5-fold CV, plus TabPFN on datasets with ≤ 10,000 rows;
   - the best by validation error is reported.
   - The recipe is calibrated on 10–15 TabRepo datasets. We report its agreement with the primary gold standard (ρ and mean absolute difference).
 - **Secondary outcomes:** log-loss is not in the TabRepo tables. Balanced accuracy needs predictions. Both are computed only where we run models ourselves.
 - **Feasibility label:** gold AUC < threshold means "not feasible". In the 117 binary datasets, 6 have AUC < 0.70 and 22 have AUC < 0.80.
-  - **[DECISION] D2 – threshold.** *Recommended:* primary 0.80, with sensitivity analyses at 0.75 and 0.85. The thesis plan said 0.70, but that leaves too few infeasible cases for a stable estimate.
+  - **D2 – threshold (decided 2026-09-24):** primary 0.80, with sensitivity analyses at 0.75 and 0.85. The thesis plan said 0.70, but that leaves too few infeasible cases for a stable estimate.
 - **Ceiling effect:** median gold AUC is about 0.95, so the distribution is skewed towards easy datasets. Rank-based statistics are used throughout for this reason.
 
 ## 5. Readiness measures

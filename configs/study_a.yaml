@@ -15,7 +15,7 @@ pool_filters:
   exclude_synthetic_in_primary: true      # e.g. GAMETES, 2dplanes; kept for sensitivity analysis
 
 feasibility:
-  primary_threshold_auc: 0.80             # DECISION: see analysis plan section 4
+  primary_threshold_auc: 0.80             # D2, decided 2026-09-24
   sensitivity_thresholds_auc: [0.75, 0.85]
 
 seed: 20260924
