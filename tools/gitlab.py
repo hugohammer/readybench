@@ -14,6 +14,8 @@ import argparse
 import io
 import json
 import sys
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 import zipfile
@@ -46,8 +48,17 @@ class GitLab:
         data = json.dumps(body).encode() if body is not None else None
         req = urllib.request.Request(url, data=data, method=method, headers={
             "PRIVATE-TOKEN": self.token, "Content-Type": "application/json"})
-        with urllib.request.urlopen(req) as resp:
-            payload = resp.read()
+        for attempt in range(5):  # ride out short network drops (e.g. DNS on WSL)
+            try:
+                with urllib.request.urlopen(req, timeout=60) as resp:
+                    payload = resp.read()
+                break
+            except urllib.error.HTTPError:
+                raise
+            except (urllib.error.URLError, TimeoutError):
+                if attempt == 4:
+                    raise
+                time.sleep(10 * (attempt + 1))
         return payload if raw else json.loads(payload)
 
 
@@ -80,6 +91,12 @@ def cmd_fetch(gl: GitLab, args) -> None:
         print(f"{job['name']}: {len(blob) / 1024**2:.1f} MB -> {dest.relative_to(ROOT)}")
 
 
+def cmd_log(gl: GitLab, args) -> None:
+    text = gl.request("GET", f"/jobs/{args.job}/trace", raw=True).decode("utf-8", "replace")
+    lines = text.splitlines()
+    print("\n".join(lines[-args.tail:] if args.tail else lines))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -92,10 +109,13 @@ def main() -> None:
     status.add_argument("pipeline", nargs="?", type=int)
     fetch = sub.add_parser("fetch")
     fetch.add_argument("pipeline", type=int)
+    log = sub.add_parser("log")
+    log.add_argument("job", type=int)
+    log.add_argument("--tail", type=int, default=60, help="last N lines (0 = all)")
     args = parser.parse_args()
 
     gl = GitLab(load_env())
-    {"run": cmd_run, "status": cmd_status, "fetch": cmd_fetch}[args.command](gl, args)
+    {"run": cmd_run, "status": cmd_status, "fetch": cmd_fetch, "log": cmd_log}[args.command](gl, args)
 
 
 if __name__ == "__main__":
