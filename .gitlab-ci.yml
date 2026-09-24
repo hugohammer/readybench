@@ -1,0 +1,88 @@
+# ═══════════════════════════════════════════════════════════════════════════
+#  ReadyBench on the OsloMet GitLab runners
+#
+#  Build ▸ Pipelines ▸ "Run pipeline", pick TASK and RUNNER_TAG, press run.
+#  Or from the laptop:  python tools/gitlab.py run --task <task> --runner <tag>
+#  Results come back with:  python tools/gitlab.py fetch <pipeline-id>
+# ═══════════════════════════════════════════════════════════════════════════
+
+# A plain `git push` never starts compute. Pipelines only run when started
+# deliberately (web form, API, trigger or schedule).
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(web|api|trigger|schedule)$/'
+
+# CPU only for now (the GPU runner is down). Plain Python image; LightGBM's
+# libgomp1 is added in ci/setup_env.sh.
+image: python:3.12-slim
+
+stages:
+  - run
+
+variables:
+  TASK:
+    value: "probe_runner"
+    description: "Script in scripts/ to run (without .py). probe_runner runs on all three runners at once."
+    options:
+      - "probe_runner"
+      - "fetch_tabrepo_tables"
+  TASK_ARGS:
+    value: ""
+    description: "Extra command-line arguments passed to the script"
+  RUNNER_TAG:
+    value: "xl-cloud-runner"
+    description: "Runner for TASK (ignored by probe_runner). xl-cloud-runner: very large jobs, max 96 h. shared-runner-1: 16 cores / 32 GB. shared-runner-2: 4 cores / 8 GB."
+    options:
+      - "xl-cloud-runner"
+      - "shared-runner-1"
+      - "shared-runner-2"
+  PYTHONPATH: "$CI_PROJECT_DIR/src"
+  READYBENCH_ROOT: "$CI_PROJECT_DIR"
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  GIT_DEPTH: "1"
+
+.base:
+  stage: run
+  interruptible: false
+  # Two separate caches: wheels (keyed on the lock file) and downloaded
+  # datasets. Caches live on each runner, so a first job on a runner is slower.
+  cache:
+    - key:
+        files: [requirements.lock]
+      paths: [.cache/pip/]
+    - key: "datasets-v1"
+      paths: [data_cache/]
+  before_script:
+    - bash ci/setup_env.sh
+  artifacts:
+    when: always
+    expire_in: 30 days
+    name: "$CI_JOB_NAME-$CI_JOB_ID"
+    # Results are compact tables. Large intermediate files (datasets,
+    # predictions) never go into artifacts; they stay in data_cache/.
+    paths:
+      - outputs/
+      - logs/
+
+probe:
+  extends: .base
+  rules:
+    - if: '$TASK == "probe_runner"'
+  parallel:
+    matrix:
+      - PROBE_TAG: ["xl-cloud-runner", "shared-runner-1", "shared-runner-2"]
+  tags:
+    - $PROBE_TAG
+  timeout: 1h
+  script:
+    - python scripts/probe_runner.py --label "$PROBE_TAG"
+
+run:
+  extends: .base
+  rules:
+    - if: '$TASK != "probe_runner"'
+  tags:
+    - $RUNNER_TAG
+  timeout: 96h            # GitLab caps this at the chosen runner's own maximum
+  script:
+    - python "scripts/$TASK.py" $TASK_ARGS
