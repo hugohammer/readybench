@@ -1,0 +1,11 @@
+# Top-level dependencies. Exact versions are pinned in requirements.lock
+numpy
+pandas
+scipy
+scikit-learn
+pyarrow
+openml
+pymfe
+lightgbm
+aidrin
+pyyaml

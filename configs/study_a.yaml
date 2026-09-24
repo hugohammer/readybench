@@ -1,0 +1,21 @@
+# Study A configuration (draft, see docs/analysis_plan.md)
+
+gold_standard:
+  source: tabrepo
+  release: "2023_11_14"
+  primary: AutoGluon_bq_4h8c_2023_11_14   # AutoGluon best quality, 4 h, 8 cores
+  folds: [0, 1, 2]                        # the folds TabRepo evaluated
+  metric: roc_auc
+
+pool_filters:
+  problem_type: binary
+  min_rows: 500
+  max_rows: 1000000
+  max_features: 2000
+  exclude_synthetic_in_primary: true      # e.g. GAMETES, 2dplanes; kept for sensitivity analysis
+
+feasibility:
+  primary_threshold_auc: 0.80             # DECISION: see analysis plan section 4
+  sensitivity_thresholds_auc: [0.75, 0.85]
+
+seed: 20260924
