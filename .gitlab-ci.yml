@@ -26,6 +26,7 @@ variables:
     options:
       - "probe_runner"
       - "fetch_tabrepo_tables"
+      - "phase1_profile_pool"
   TASK_ARGS:
     value: ""
     description: "Extra command-line arguments passed to the script"
@@ -51,7 +52,7 @@ variables:
         files: [requirements.lock]
       paths: [.cache/pip/]
     - key: "datasets-v1"
-      paths: [data_cache/]
+      paths: [data_cache/datasets/, data_cache/splits/, data_cache/tabrepo/]
   before_script:
     - bash ci/setup_env.sh
   artifacts:

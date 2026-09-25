@@ -1,0 +1,152 @@
+source,did,tid,name,version,NumberOfInstances,NumberOfFeatures,NumberOfNumericFeatures,NumberOfSymbolicFeatures,missing_cell_frac,missing_row_frac,imbalance_ratio,category,flag,reason,used
+tabrepo,37,37,diabetes,1,768.0,9.0,8.0,1.0,0.0,0.0,1.8656716417910448,primary,,,True
+tabrepo,44,43,spambase,1,4601.0,58.0,57.0,1.0,0.0,0.0,1.5377826806398236,primary,,,True
+tabrepo,151,219,electricity,1,45312.0,9.0,7.0,2.0,0.0,0.0,1.3554608306908562,primary,,,True
+tabrepo,310,3483,mammography,1,11183.0,7.0,6.0,1.0,0.0,0.0,42.011538461538464,primary,,,True
+tabrepo,715,3581,fri_c3_1000_25,2,1000.0,26.0,25.0,1.0,0.0,0.0,1.257336343115124,synthetic,,Friedman artificial data (fri_*),True
+tabrepo,717,3583,rmftsa_ladata,2,508.0,11.0,10.0,1.0,0.0,0.0,1.2882882882882882,binarized,,OpenML description: binarized from a numeric/multi-class target,True
+tabrepo,725,3591,bank8FM,2,8192.0,9.0,8.0,1.0,0.0,0.0,1.4771696401572425,synthetic,,bank8FM: simulated bank queues (Delve) binarized,True
+tabrepo,727,3593,2dplanes,2,40768.0,11.0,10.0,1.0,0.0,0.0,1.003538431295459,synthetic,,2dplanes: artificial function (Breiman) binarized,True
+tabrepo,734,3600,ailerons,2,13750.0,41.0,40.0,1.0,0.0,0.0,1.3592999313658205,binarized,,OpenML description: binarized from a numeric/multi-class target,True
+tabrepo,735,3601,cpu_small,3,8192.0,13.0,12.0,1.0,0.0,0.0,2.307226483649576,binarized,,OpenML description: binarized from a numeric/multi-class target,True
+tabrepo,740,3606,fri_c3_1000_10,2,1000.0,11.0,10.0,1.0,0.0,0.0,1.2727272727272727,synthetic,,Friedman artificial data (fri_*),True
+tabrepo,742,3608,fri_c4_500_100,2,500.0,101.0,100.0,1.0,0.0,0.0,1.304147465437788,synthetic,,Friedman artificial data (fri_*),True
+tabrepo,750,3616,pm10,2,500.0,8.0,7.0,1.0,0.0,0.0,1.032520325203252,binarized,,OpenML description: binarized from a numeric/multi-class target,True
+tabrepo,752,3618,puma32H,2,8192.0,33.0,32.0,1.0,0.0,0.0,1.015748031496063,synthetic,,puma32H: simulated robot arm (Delve) binarized,True
+tabrepo,757,3623,meta,2,528.0,22.0,19.0,3.0,0.0433884297520661,0.5,8.777777777777779,binarized,,OpenML description: binarized from a numeric/multi-class target,True
+tabrepo,761,3627,cpu_act,3,8192.0,22.0,21.0,1.0,0.0,0.0,2.307226483649576,binarized,,OpenML description: binarized from a numeric/multi-class target,True
+tabrepo,799,3664,fri_c0_1000_5,2,1000.0,6.0,5.0,1.0,0.0,0.0,1.012072434607646,synthetic,,Friedman artificial data (fri_*),True
+tabrepo,802,3667,pbcseq,2,1945.0,19.0,12.0,7.0,0.0306589094845081,0.4277634961439588,1.0010288065843622,binarized,,OpenML description: binarized from a numeric/multi-class target,True
+tabrepo,803,3668,delta_ailerons,1,7129.0,6.0,5.0,1.0,0.0,0.0,1.1306037059175134,binarized,,OpenML description: binarized from a numeric/multi-class target,True
+tabrepo,807,3672,kin8nm,2,8192.0,9.0,8.0,1.0,0.0,0.0,1.0357852882703775,synthetic,,kin8nm: simulated robot arm (Delve) binarized,True
+tabrepo,816,3681,puma8NH,2,8192.0,9.0,8.0,1.0,0.0,0.0,1.0088278567925453,synthetic,,puma8NH: simulated robot arm (Delve) binarized,True
+tabrepo,819,3684,delta_elevators,3,9517.0,7.0,6.0,1.0,0.0,0.0,1.0112003381234151,binarized,,OpenML description: binarized from a numeric/multi-class target,True
+tabrepo,823,3688,houses,2,20640.0,9.0,8.0,1.0,0.0,0.0,1.3154588288086158,binarized,,OpenML description: binarized from a numeric/multi-class target,True
+tabrepo,825,3690,boston_corrected,2,506.0,21.0,17.0,4.0,0.0,0.0,1.2690582959641257,binarized,,OpenML description: binarized from a numeric/multi-class target,True
+tabrepo,833,3698,bank32nh,2,8192.0,33.0,32.0,1.0,0.0,0.0,2.221392056626032,synthetic,,bank32nh: simulated bank queues (Delve) binarized,True
+tabrepo,837,3702,fri_c1_1000_50,2,1000.0,51.0,50.0,1.0,0.0,0.0,1.2075055187637969,synthetic,,Friedman artificial data (fri_*),True
+tabrepo,839,3704,kdd_el_nino-small,2,782.0,9.0,6.0,3.0,0.066211992043194,0.2736572890025575,1.854014598540146,binarized,,OpenML description: binarized from a numeric/multi-class target,True
+tabrepo,847,3712,wind,2,6574.0,15.0,14.0,1.0,0.0,0.0,1.1392775789131142,binarized,,OpenML description: binarized from a numeric/multi-class target,True
+tabrepo,871,3735,pollen,2,3848.0,6.0,5.0,1.0,0.0,0.0,1.0,binarized,,OpenML description: binarized from a numeric/multi-class target,True
+tabrepo,884,3747,fri_c0_500_5,2,500.0,6.0,5.0,1.0,0.0,0.0,1.0080321285140563,synthetic,,Friedman artificial data (fri_*),True
+tabrepo,886,3749,no2,2,500.0,8.0,7.0,1.0,0.0,0.0,1.0080321285140563,binarized,,OpenML description: binarized from a numeric/multi-class target,True
+tabrepo,901,3764,fried,2,40768.0,11.0,10.0,1.0,0.0,0.0,1.0042279140651886,synthetic,,fried: Friedman artificial function binarized,True
+tabrepo,903,3766,fri_c2_1000_25,2,1000.0,26.0,25.0,1.0,0.0,0.0,1.2883295194508009,synthetic,,Friedman artificial data (fri_*),True
+tabrepo,920,3783,fri_c2_500_50,2,500.0,51.0,50.0,1.0,0.0,0.0,1.4390243902439024,synthetic,,Friedman artificial data (fri_*),True
+tabrepo,923,3786,visualizing_soil,2,8641.0,5.0,3.0,2.0,0.0,0.0,1.2224794238683128,binarized,,OpenML description: binarized from a numeric/multi-class target,True
+tabrepo,930,3793,colleges_usnews,2,1302.0,34.0,32.0,2.0,0.1768772024939008,0.8786482334869432,1.1205211726384363,binarized,,OpenML description: binarized from a numeric/multi-class target,True
+tabrepo,936,3799,fri_c3_500_10,2,500.0,11.0,10.0,1.0,0.0,0.0,1.1929824561403508,synthetic,,Friedman artificial data (fri_*),True
+tabrepo,937,3800,fri_c3_500_50,2,500.0,51.0,50.0,1.0,0.0,0.0,1.2935779816513762,synthetic,,Friedman artificial data (fri_*),True
+tabrepo,949,3812,arsenic-female-bladder,2,559.0,5.0,3.0,2.0,0.0,0.0,5.9875,binarized,,OpenML description: binarized from a numeric/multi-class target,True
+tabrepo,981,3844,kdd_internet_usage,1,10108.0,69.0,0.0,69.0,0.0038698003590211,0.2670162247724574,2.723020257826888,binarized,,OpenML description: binarized from a numeric/multi-class target,True
+tabrepo,1039,3892,hiva_agnostic,1,4229.0,1618.0,1617.0,1.0,0.0,0.0,27.38255033557047,primary,,,True
+tabrepo,1046,3899,mozilla4,1,15545.0,6.0,5.0,1.0,0.0,0.0,2.043265465935787,primary,,,True
+tabrepo,1050,3903,pc3,1,1563.0,38.0,37.0,1.0,0.0,0.0,8.76875,primary,,,True
+tabrepo,1053,3904,jm1,1,10885.0,22.0,21.0,1.0,0.0001043972105065,0.0004593477262287,4.168566001899335,primary,,,True
+tabrepo,1056,3907,mc1,1,9466.0,39.0,38.0,1.0,0.0,0.0,138.2058823529412,primary,,,True
+tabrepo,1063,3913,kc2,1,522.0,22.0,21.0,1.0,0.0,0.0,3.878504672897196,primary,,,True
+tabrepo,1068,3918,pc1,1,1109.0,22.0,21.0,1.0,0.0,0.0,13.402597402597404,primary,,,True
+tabrepo,1069,3919,pc2,1,5589.0,37.0,36.0,1.0,0.0,0.0,242.0,primary,,,True
+tabrepo,1111,3945,KDDCup09_appetency,1,50000.0,231.0,192.0,39.0,0.6947317748917748,1.0,55.17977528089887,primary,,,True
+tabrepo,1120,3954,MagicTelescope,1,19020.0,12.0,11.0,1.0,0.0,0.0,1.8438995215311005,primary,,,True
+tabrepo,1547,9909,autoUniv-au1-1000,1,1000.0,21.0,20.0,1.0,0.0,0.0,2.861003861003861,synthetic,,autoUniv: generated by a data generator,True
+tabrepo,1507,9943,twonorm,1,7400.0,21.0,20.0,1.0,0.0,0.0,1.0016229375169057,synthetic,,twonorm: Gaussian mixture (Delve),True
+tabrepo,1496,9959,ringnorm,1,7400.0,21.0,20.0,1.0,0.0,0.0,1.019650655021834,synthetic,,ringnorm: Gaussian mixture (Delve),True
+tabrepo,1479,9970,hill-valley,1,1212.0,101.0,100.0,1.0,0.0,0.0,1.0,synthetic,,hill-valley: generated terrain curves,True
+tabrepo,1480,9971,ilpd,1,583.0,11.0,9.0,2.0,0.0,0.0,2.4910179640718564,primary,,,True
+tabrepo,1485,9976,madelon,1,2600.0,501.0,500.0,1.0,0.0,0.0,1.0,synthetic,,madelon: artificial NIPS 2003 feature-selection data,True
+tabrepo,1471,9983,eeg-eye-state,1,14980.0,15.0,14.0,1.0,0.0,0.0,1.228171947047449,primary,time-ordered,eeg-eye-state: consecutive EEG samples; random CV folds are optimistic,True
+tabrepo,6332,14954,cylinder-bands,2,540.0,40.0,18.0,22.0,0.04625,0.487037037037037,1.368421052631579,primary,,,True
+tabrepo,23381,125920,dresses-sales,2,500.0,13.0,1.0,12.0,0.1284615384615384,0.802,1.380952380952381,primary,,,True
+tabrepo,40536,125968,SpeedDating,1,8378.0,121.0,59.0,62.0,0.0181230258705898,0.8749104798281213,5.071014492753624,primary,,,True
+tabrepo,40981,146818,Australian,4,690.0,15.0,6.0,9.0,0.0,0.0,1.247557003257329,primary,,,True
+tabrepo,40994,146819,climate-model-simulation-crashes,4,540.0,21.0,20.0,1.0,0.0,0.0,10.73913043478261,primary,,,True
+tabrepo,40983,146820,wilt,2,4839.0,6.0,5.0,1.0,0.0,0.0,17.54022988505747,primary,,,True
+tabrepo,23517,167120,numerai28.6,2,96320.0,22.0,21.0,1.0,0.0,0.0,1.0208971507700055,primary,anonymized,numerai28.6: encrypted stock-market features,True
+tabrepo,1489,168350,phoneme,1,5404.0,6.0,5.0,1.0,0.0,0.0,2.407313997477932,primary,,,True
+tabrepo,31,168757,credit-g,1,1000.0,21.0,7.0,14.0,0.0,0.0,2.333333333333333,primary,,,True
+tabrepo,41138,168868,APSFailure,1,76000.0,171.0,170.0,1.0,0.0830020775623268,0.9900526315789474,54.27272727272727,primary,,,True
+tabrepo,41143,168911,jasmine,1,2984.0,145.0,8.0,137.0,0.0,0.0,1.0,primary,anonymized,jasmine: ChaLearn AutoML data; origin undisclosed,True
+tabrepo,1169,189354,airlines,1,539383.0,8.0,3.0,5.0,0.0,0.0,1.2449597109845836,primary,,,True
+tabrepo,41147,189356,albert,1,425240.0,79.0,26.0,53.0,0.0813836773038963,0.9998095193302604,1.0,primary,anonymized,albert: ChaLearn/4Paradigm challenge data; origin undisclosed,True
+tabrepo,41158,189922,gina,1,3153.0,971.0,970.0,1.0,0.0,0.0,1.0341935483870968,image,,gina: handwritten digit pixels (MNIST-derived),False
+tabrepo,1487,190137,ozone-level-8hr,1,2534.0,73.0,72.0,1.0,0.0,0.0,14.8375,primary,,,True
+tabrepo,41144,190392,madeline,1,3140.0,260.0,259.0,1.0,0.0,0.0,1.011531069827034,primary,anonymized,madeline: ChaLearn AutoML data; origin undisclosed,True
+tabrepo,41145,190410,philippine,1,5832.0,309.0,308.0,1.0,0.0,0.0,1.0,primary,anonymized,philippine: ChaLearn AutoML data; origin undisclosed,True
+tabrepo,41156,190411,ada,1,4147.0,49.0,48.0,1.0,0.0,0.0,3.0301263362487854,primary,anonymized,ada: ChaLearn/4Paradigm challenge data; origin undisclosed,True
+tabrepo,1464,359955,blood-transfusion-service-center,1,748.0,5.0,4.0,1.0,0.0,0.0,3.202247191011236,primary,,,True
+tabrepo,1494,359956,qsar-biodeg,1,1055.0,42.0,41.0,1.0,0.0,0.0,1.963483146067416,primary,,,True
+tabrepo,1049,359958,pc4,1,1458.0,38.0,37.0,1.0,0.0,0.0,7.191011235955056,primary,,,True
+tabrepo,1067,359962,kc1,1,2109.0,22.0,21.0,1.0,0.0,0.0,5.469325153374233,primary,,,True
+tabrepo,40978,359966,Internet-Advertisements,2,3279.0,1559.0,3.0,1556.0,0.0,0.0,6.143790849673203,primary,,,True
+tabrepo,4134,359967,Bioresponse,1,3751.0,1777.0,1776.0,1.0,0.0,0.0,1.1846243447874198,primary,,,True
+tabrepo,40701,359968,churn,1,5000.0,21.0,16.0,5.0,0.0,0.0,6.072135785007072,primary,check,churn (MLC++/BigML telecom): original .names file may describe it as artificial; please confirm,True
+tabrepo,4534,359971,PhishingWebsites,1,11055.0,31.0,0.0,31.0,0.0,0.0,1.2570436913025724,primary,,,True
+tabrepo,41146,359972,sylvine,1,5124.0,21.0,20.0,1.0,0.0,0.0,1.0,primary,anonymized,sylvine: ChaLearn AutoML data; origin undisclosed,True
+tabrepo,41142,359973,christine,1,5418.0,1637.0,1599.0,38.0,0.0,0.0,1.0,primary,anonymized,christine: ChaLearn AutoML data; origin undisclosed,True
+tabrepo,40900,359975,Satellite,1,5100.0,37.0,36.0,1.0,0.0,0.0,67.0,image,,Satellite: multispectral pixel values of Landsat image patches,False
+tabrepo,4135,359979,Amazon_employee_access,1,32769.0,10.0,0.0,10.0,0.0,0.0,16.274117026884554,primary,,,True
+tabrepo,1486,359980,nomao,1,34465.0,119.0,89.0,30.0,0.0,0.0,2.5011174319382365,primary,,,True
+tabrepo,1461,359982,bank-marketing,1,45211.0,17.0,7.0,10.0,0.0,0.0,7.548118737001324,primary,,,True
+tabrepo,1590,359983,adult,2,48842.0,15.0,6.0,9.0,0.0088243724663199,0.0741165390442651,3.179173440574998,primary,,,True
+tabrepo,41150,359990,MiniBooNE,1,130064.0,51.0,50.0,1.0,0.0,0.0,2.563494890270966,primary,,,True
+tabrepo,41162,359991,kick,1,72983.0,33.0,14.0,19.0,0.0619783187367419,0.9551402381376484,7.130904634581105,primary,,,True
+tabrepo,42733,359992,Click_prediction_small,10,39948.0,12.0,5.0,7.0,0.0,0.0,4.937574316290131,primary,,,True
+tabrepo,42742,360113,porto-seguro,3,595212.0,58.0,26.0,32.0,0.0245191687134598,0.7901067182785293,26.43671061122891,primary,,,True
+tabrepo,42769,360114,Higgs,3,1000000.0,29.0,28.0,1.0,0.0,0.0,1.1272974812797822,primary,,,True
+tabrepo,40645,361331,GAMETES_Epistasis_2-Way_1000atts_0.4H_EDM-1_EDM-1_1,1,1600.0,1001.0,0.0,1001.0,0.0,0.0,1.0,synthetic,,GAMETES simulated genotype data,True
+tabrepo,40646,361332,GAMETES_Epistasis_2-Way_20atts_0.1H_EDM-1_1,1,1600.0,21.0,0.0,21.0,0.0,0.0,1.0,synthetic,,GAMETES simulated genotype data,True
+tabrepo,40647,361333,GAMETES_Epistasis_2-Way_20atts_0.4H_EDM-1_1,1,1600.0,21.0,0.0,21.0,0.0,0.0,1.0,synthetic,,GAMETES simulated genotype data,True
+tabrepo,40648,361334,GAMETES_Epistasis_3-Way_20atts_0.2H_EDM-1_1,1,1600.0,21.0,0.0,21.0,0.0,0.0,1.0,synthetic,,GAMETES simulated genotype data,True
+tabrepo,40649,361335,GAMETES_Heterogeneity_20atts_1600_Het_0.4_0.2_50_EDM-2_001,1,1600.0,21.0,0.0,21.0,0.0,0.0,1.0,synthetic,,GAMETES simulated genotype data,True
+tabrepo,40650,361336,GAMETES_Heterogeneity_20atts_1600_Het_0.4_0.2_75_EDM-2_001,1,1600.0,21.0,0.0,21.0,0.0,0.0,1.0,synthetic,,GAMETES simulated genotype data,True
+tabrepo,40704,361339,Titanic,2,2201.0,4.0,3.0,1.0,0.0,0.0,2.095639943741209,primary,,,True
+tabrepo,40705,361340,tokyo1,1,959.0,45.0,42.0,3.0,0.0,0.0,1.7716763005780347,primary,,,True
+tabrepo,40706,361341,parity5_plus_5,1,1124.0,11.0,0.0,11.0,0.0,0.0,1.0179533213644525,synthetic,,parity5+5: Boolean parity function,True
+tabrepo,40922,361342,Run_or_walk_information,1,88588.0,7.0,6.0,1.0,0.0,0.0,1.0032109988015283,primary,time-ordered,Run_or_walk: consecutive sensor samples; random CV folds are optimistic,True
+extension,45550,362114,ATLAS-Higgs-Boson-Machine-Learning-Challenge-2014,2,818238.0,31.0,30.0,1.0,0.2037614420727339,0.7267616512555026,1.9268779510659608,primary,simulated-physics,ATLAS Higgs challenge: Monte Carlo events (like Higgs/MiniBooNE in TabRepo),True
+extension,46856,363562,BNP_Paribas_Cardif_Claims_Management,3,114321.0,133.0,113.0,1.0,0.3352564237896812,0.84468295413791,3.187582417582417,primary,,,True
+extension,42750,362300,Census-Income-KDD,3,199523.0,42.0,13.0,0.0,0.0496084351654887,0.5232128626774858,15.113955742206429,primary,,,True
+extension,46422,362206,Credit-Risk-Classification-Dataset,1,1125.0,43.0,6.0,1.0,0.0030801033591731,0.1324444444444444,4.0,primary,provenance,Credit-Risk-Classification-Dataset: Kaggle upload; provenance thin,True
+extension,46683,363383,Dynamically-Generated-Hate-Speech-Dataset,1,41144.0,13.0,3.0,0.0,0.0206666267817346,0.268666148162551,1.169012599504455,text,,Dynamically-Generated-Hate-Speech: free-text statements,False
+extension,46567,362291,Financial_Indicators_US_Stocks,1,4392.0,231.0,230.0,1.0,0.0926014635031028,1.0,2.263001485884101,duplicate,,Financial_Indicators_US_Stocks: second upload of did 46527,False
+extension,46359,362220,Fraud-Detection-Updated,1,4156.0,29.0,28.0,1.0,0.2133599946898543,1.0,8.96642685851319,primary,provenance,Fraud-Detection-Updated: provenance not documented on OpenML,True
+extension,46116,362205,German-Credit-Risk-with-Target,1,1000.0,10.0,4.0,5.0,0.0577,0.478,2.333333333333333,duplicate,,German-Credit-Risk-with-Target: Kaggle copy of credit-g (did 31) in TabRepo,False
+extension,45577,362204,Give-Me-Some-Credit,1,150000.0,11.0,10.0,1.0,0.0203969696969696,0.1982066666666666,13.961101137043686,primary,,,True
+extension,46929,363636,GiveMeSomeCredit,1,150000.0,11.0,10.0,1.0,0.0203969696969696,0.1982066666666666,13.961101137043686,duplicate,,GiveMeSomeCredit: second upload of Give-Me-Some-Credit (did 45577),False
+extension,46431,362215,HMEQ_Data,3,5960.0,21.0,10.0,1.0,0.0378715244487056,0.410234899328859,4.0126156433978135,duplicate,,HMEQ_Data v3: processed copy of HMEQ (raw version did 46483 kept),False
+extension,46483,362245,HMEQ_Data_New,1,5960.0,13.0,10.0,1.0,0.0680304594734124,0.4355704697986577,4.0126156433978135,primary,,,True
+extension,46517,362262,HMEQ_Data_Preprocessed,1,5960.0,21.0,20.0,1.0,0.0378715244487056,0.410234899328859,4.0126156433978135,duplicate,,HMEQ_Data_Preprocessed: processed copy of HMEQ (raw version did 46483 kept),False
+extension,46857,363563,Homesite_Quote_Conversion,2,260753.0,299.0,270.0,1.0,0.0041893462985454,0.7881443358273922,4.333026547224608,primary,,,True
+extension,46858,363566,IEEE-CIS_Fraud_Detection,2,590540.0,456.0,424.0,1.0,0.4794359080508532,1.0,27.579586700866283,primary,,,True
+extension,42343,361329,KDD98,3,82318.0,478.0,341.0,137.0,0.0609766889319214,1.0,7.495149638802889,primary,,,True
+extension,1112,3946,KDDCup09_churn,1,50000.0,231.0,192.0,39.0,0.6947317748917748,1.0,12.616557734204791,duplicate,,KDDCup09_churn: same feature matrix as KDDCup09_appetency (did 1111) in TabRepo,False
+extension,1114,3948,KDDCup09_upselling,1,50000.0,231.0,192.0,39.0,0.6947317748917748,1.0,12.579576317218905,duplicate,,KDDCup09_upselling: same feature matrix as KDDCup09_appetency (did 1111) in TabRepo,False
+extension,46792,363499,LICD,3,63634.0,581.0,572.0,1.0,0.9073359336528491,1.0,2.88747021809518,primary,,,True
+extension,43595,362377,Loan-Predication,1,614.0,12.0,5.0,0.0,0.0202225841476655,0.2182410423452769,2.1979166666666665,primary,,,True
+extension,44224,362565,MembershipWoes,1,10362.0,15.0,8.0,0.0,0.0786463359711767,0.7743678826481374,2.2968501431753103,primary,,,True
+extension,44226,362562,NewspaperChurn,1,15855.0,19.0,4.0,0.0,0.0047469667546349,0.0879217912330495,4.2206124464932495,primary,,,True
+extension,46630,363425,Skin_Cancer_PAD-UFES-20,1,2298.0,26.0,5.0,8.0,0.1754703086295775,0.3585726718885987,1.403765690376569,primary,,,True
+extension,44227,362563,South_Asian_Churn_dataset,1,2000.0,14.0,9.0,0.0,0.0161785714285714,0.1395,1.0,primary,,,True
+extension,46860,363571,Support2,2,9105.0,47.0,38.0,1.0,0.1100868122495238,0.9663920922570016,2.135330578512397,primary,,,True
+extension,46527,362271,US_Stocks_Financial_Indicators,1,4392.0,231.0,230.0,1.0,0.0926014635031028,1.0,2.263001485884101,primary,,,True
+extension,1119,3953,adult-census,1,32561.0,16.0,7.0,9.0,0.0081807991155062,0.0736770983692147,3.152659099604642,duplicate,,adult-census: same census extract as adult (did 1590) in TabRepo,False
+extension,45051,363055,adult-test,1,48842.0,15.0,6.0,0.0,0.0088243724663199,0.0741165390442651,3.179173440574998,duplicate,,adult-test: same census extract as adult (did 1590) in TabRepo,False
+extension,897,3760,colleges_aaup,2,1161.0,16.0,13.0,3.0,0.0137812230835486,0.0749354005167958,2.336206896551724,binarized,,colleges_aaup: numeric target split at the mean,True
+extension,43891,361019,communities-and-crime-binary,2,1994.0,129.0,127.0,1.0,0.1524029452699183,0.9383149448345036,1.3597633136094676,binarized,,communities-and-crime: crime rate thresholded at 0.2,True
+extension,29,29,credit-approval,1,690.0,16.0,6.0,10.0,0.0060688405797101,0.0536231884057971,1.247557003257329,duplicate,,credit-approval is Quinlan's credit data = Australian (did 40981) in TabRepo,False
+extension,44155,361107,credit-approval_reproduced,1,690.0,16.0,6.0,10.0,0.0060688405797101,0.0536231884057971,1.247557003257329,duplicate,,credit-approval_reproduced = Australian (did 40981) in TabRepo,False
+extension,46809,363531,fake_job_postings2,2,12725.0,6.0,0.0,1.0,0.2775769482645711,0.8719842829076621,22.094373865698728,text,,fake_job_postings2: free-text job ads,False
+extension,1002,3865,ipums_la_98-small,2,7485.0,56.0,16.0,40.0,0.0773618665903235,0.984502338009352,8.462705436156764,binarized,,ipums_la_98-small: majority class vs rest,True
+extension,1018,3881,ipums_la_99-small,2,8844.0,57.0,15.0,42.0,0.0691181254810477,1.0,14.570422535211268,binarized,,ipums_la_99-small: majority class vs rest,True
+extension,451,3543,irish,1,500.0,6.0,2.0,4.0,0.0106666666666666,0.064,1.2522522522522523,primary,,,True
+extension,46654,363369,jigsaw_unintended_bias100K,1,100000.0,45.0,41.0,1.0,0.4228784444444444,0.86865,15.545334215751158,text,,jigsaw_unintended_bias100K: free-text comments,False
+extension,993,3856,kdd_ipums_la_97-small,1,7019.0,61.0,33.0,28.0,0.1023311433369379,1.0,1.7058596761757905,binarized,,kdd_ipums_la_97-small: majority class vs rest,True
+extension,46719,363427,mental-health-in-tech-survey,3,1259.0,27.0,1.0,0.0,0.055658517930162,0.931691818903892,4.521929824561403,primary,odd-target,mental-health-in-tech-survey: target is whether employer is a tech company,True
+extension,24,24,mushroom,1,8124.0,23.0,0.0,23.0,0.0132725365529938,0.3052683407188577,1.0745658835546477,primary,near-ceiling,mushroom: known to be almost perfectly separable,True
+extension,42738,362296,open_payments,3,73558.0,6.0,0.0,1.0,0.1884725885242484,0.9817558933086816,14.489155611707728,primary,,,True
+extension,46950,363656,polish_companies_bankruptcy,1,5910.0,65.0,64.0,1.0,0.0121462970193934,0.4871404399323181,13.414634146341465,primary,,,True
+extension,470,3561,profb,1,672.0,10.0,5.0,5.0,0.1785714285714285,0.9910714285714286,2.0,primary,odd-target,profb: target is whether the favourite played at home,True
+extension,41160,361323,rl,1,31406.0,23.0,8.0,15.0,0.041194011667668,0.5477934152709674,9.486143572621035,primary,anonymized,rl: 4Paradigm challenge data; origin undisclosed,True
+extension,38,3021,sick,1,3772.0,30.0,7.0,23.0,0.0535878402262283,1.0,15.329004329004327,primary,,,True
+extension,940,3803,water-treatment,2,527.0,37.0,21.0,16.0,0.0277962972460126,0.2466793168880455,5.5875,binarized,,water-treatment: numeric target split at the mean,True
