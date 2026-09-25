@@ -8,6 +8,7 @@ billiard==4.3.0
 blinker==1.9.0
 blosc2==4.13.1
 brotli==1.2.0
+catboost==1.2.10
 celery==5.6.3
 certifi==2026.7.22
 cffi==2.1.1
@@ -28,6 +29,7 @@ flexparser==0.4
 fonttools==4.66.0
 formulaic==1.2.2
 gower==0.1.2
+graphviz==0.21
 h11==0.16.0
 h2==4.4.1
 h5py==3.16.0
@@ -64,6 +66,7 @@ pgeocode==0.5.0
 pillow==12.3.0
 Pint==0.25.3
 platformdirs==4.11.12
+plotly==7.1.0
 prompt_toolkit==3.0.53
 psutil==7.2.2
 py-cpuinfo==9.0.0

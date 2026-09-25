@@ -27,6 +27,7 @@ variables:
       - "probe_runner"
       - "fetch_tabrepo_tables"
       - "phase1_profile_pool"
+      - "phase2_gold"
   TASK_ARGS:
     value: ""
     description: "Extra command-line arguments passed to the script"
