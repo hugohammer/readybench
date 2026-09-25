@@ -18,3 +18,6 @@ print(f"python {platform.python_version()} on {platform.node()}, cpus visible: {
 import lightgbm, openml, pymfe, aidrin, sklearn  # fail early if anything is missing
 print("all imports resolve")
 EOF
+
+# Gold-standard tables used by several phases (skipped when already cached)
+python scripts/fetch_tabrepo_tables.py
