@@ -4,6 +4,8 @@
   python tools/gitlab.py run --task some_script --runner xl-cloud-runner --args "--shard 3"
   python tools/gitlab.py status [pipeline-id]
   python tools/gitlab.py fetch <pipeline-id>      # -> outputs/runs/<pipeline-id>/<job>/
+  python tools/gitlab.py log <job-id> [--tail N]
+  python tools/gitlab.py cancel <pipeline-id>
 
 Needs tools/gitlab.env (gitignored, copy from gitlab.env.example) with a
 personal access token that has the `api` scope (`read_api` suffices for
@@ -91,6 +93,13 @@ def cmd_fetch(gl: GitLab, args) -> None:
         print(f"{job['name']}: {len(blob) / 1024**2:.1f} MB -> {dest.relative_to(ROOT)}")
 
 
+def cmd_cancel(gl: GitLab, args) -> None:
+    for job in gl.request("GET", f"/pipelines/{args.pipeline}/jobs?per_page=100"):
+        if job["status"] in ("created", "pending", "running"):
+            gl.request("POST", f"/jobs/{job['id']}/cancel")
+            print(f"canceled job {job['id']} ({job['name']})")
+
+
 def cmd_log(gl: GitLab, args) -> None:
     text = gl.request("GET", f"/jobs/{args.job}/trace", raw=True).decode("utf-8", "replace")
     lines = text.splitlines()
@@ -109,13 +118,15 @@ def main() -> None:
     status.add_argument("pipeline", nargs="?", type=int)
     fetch = sub.add_parser("fetch")
     fetch.add_argument("pipeline", type=int)
+    cancel = sub.add_parser("cancel")
+    cancel.add_argument("pipeline", type=int)
     log = sub.add_parser("log")
     log.add_argument("job", type=int)
     log.add_argument("--tail", type=int, default=60, help="last N lines (0 = all)")
     args = parser.parse_args()
 
     gl = GitLab(load_env())
-    {"run": cmd_run, "status": cmd_status, "fetch": cmd_fetch, "log": cmd_log}[args.command](gl, args)
+    {"run": cmd_run, "status": cmd_status, "fetch": cmd_fetch, "log": cmd_log, "cancel": cmd_cancel}[args.command](gl, args)
 
 
 if __name__ == "__main__":

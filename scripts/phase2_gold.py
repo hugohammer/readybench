@@ -36,7 +36,6 @@ FOLDS = [0, 1, 2]
 FAMILIES = ["lightgbm", "catboost"]
 CALIBRATION_N = 12
 CALIBRATION_MAX_ROWS = 200_000
-BIG_CELLS = 20_000_000  # n_rows * n_features above which a unit gets 4 threads
 OUT = OUTPUTS / "phase2"
 PREDS = ROOT / "scratch" / "phase2_preds"
 UNIT_KEYS = ["did", "fold", "family", "config"]
@@ -92,7 +91,7 @@ def work(did: int, tid: int, fold: int, family: str, config: int, params: dict, 
         return {**key, "ok": False, "error": f"{type(exc).__name__}: {exc}", "trace": traceback.format_exc(limit=4)}
 
 
-def run(datasets: pd.DataFrame, n_configs: int, workers: int, seed: int) -> None:
+def run(datasets: pd.DataFrame, n_configs: int, workers: int, seed: int, threads: int) -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     units_file = OUT / "units.csv"
     done = set()
@@ -103,20 +102,23 @@ def run(datasets: pd.DataFrame, n_configs: int, workers: int, seed: int) -> None
     # download sequentially first: parallel downloads of one dataset collide in the OpenML cache
     for d in datasets.itertuples():
         data.fetch(int(d.did), int(d.tid))
+    print(f"{len(datasets)} datasets, {threads} thread(s) per unit", flush=True)
 
     configs = {f: gold.sample_configs(f, n_configs, seed) for f in FAMILIES}
-    jobs = []
+    # Round-robin over configs: every dataset gets its default config first, so small
+    # datasets finish early and partial results are useful. Big datasets first within a config.
     order = datasets.assign(cells=datasets.NumberOfInstances * datasets.NumberOfFeatures)
-    for d in order.sort_values("cells", ascending=False).itertuples():
-        threads = 4 if d.NumberOfInstances * d.NumberOfFeatures > BIG_CELLS else 1
-        for fold in FOLDS:
-            for family in FAMILIES:
-                for cid, params in enumerate(configs[family]):
+    order = order.sort_values("cells", ascending=False)
+    jobs = []
+    for cid in range(n_configs + 1):
+        for d in order.itertuples():
+            for fold in FOLDS:
+                for family in FAMILIES:
                     if (d.did, fold, family, cid) not in done:
-                        jobs.append((int(d.did), int(d.tid), fold, family, cid, params, threads, seed))
+                        jobs.append((int(d.did), int(d.tid), fold, family, cid, configs[family][cid], threads, seed))
     print(f"{len(jobs)} units to run ({len(done)} already done) on {workers} workers", flush=True)
 
-    start = time.time()
+    start, last_beat = time.time(), 0.0
     with ProcessPoolExecutor(max_workers=workers) as ex:
         futures = [ex.submit(work, *j) for j in jobs]
         for i, fut in enumerate(as_completed(futures), 1):
@@ -125,10 +127,14 @@ def run(datasets: pd.DataFrame, n_configs: int, workers: int, seed: int) -> None
                 units_file, mode="a", header=not units_file.exists(), index=False)
             if not row["ok"]:
                 print(f"FAILED {row['did']} f{row['fold']} {row['family']} c{row['config']}: {row['error']}", flush=True)
-            if i % 50 == 0 or i == len(jobs):
-                el = time.time() - start
-                print(f"[{i}/{len(jobs)}] {el / 60:.1f} min elapsed, ~{el / i * (len(jobs) - i) / 60:.0f} min left",
-                      flush=True)
+            elif row["seconds"] > 300:
+                print(f"slow unit: did {row['did']} f{row['fold']} {row['family']} c{row['config']} "
+                      f"took {row['seconds'] / 60:.0f} min", flush=True)
+            el = time.time() - start
+            if el - last_beat > 300 or i == len(jobs):
+                last_beat = el
+                print(f"[{i}/{len(jobs)}] {el / 60:.0f} min elapsed, ~{el / i * (len(jobs) - i) / 60:.0f} min left "
+                      f"(rough: early units are the biggest)", flush=True)
 
 
 def aggregate(datasets: pd.DataFrame) -> None:
@@ -191,16 +197,20 @@ def main() -> None:
     parser.add_argument("--configs", type=int, default=16, help="random configs per family (plus the default)")
     parser.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 2) - 2))
     parser.add_argument("--limit-datasets", type=int, default=0, help="smoke test: smallest N datasets only")
+    parser.add_argument("--min-rows", type=int, default=0)
+    parser.add_argument("--max-rows", type=int, default=10**9)
+    parser.add_argument("--threads", type=int, default=1, help="threads per unit")
     parser.add_argument("--aggregate-only", action="store_true")
     args = parser.parse_args()
 
     seed = yaml.safe_load((ROOT / "configs" / "study_a.yaml").read_text())["seed"]
     datasets = select_datasets()
+    datasets = datasets[datasets.NumberOfInstances.between(args.min_rows, args.max_rows)]
     if args.limit_datasets:
         datasets = datasets.sort_values("NumberOfInstances").head(args.limit_datasets)
     print(datasets.groupby("role").size().to_string(), flush=True)
     if not args.aggregate_only:
-        run(datasets, args.configs, args.workers, seed)
+        run(datasets, args.configs, args.workers, seed, args.threads)
     aggregate(datasets)
 
 
