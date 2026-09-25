@@ -115,4 +115,7 @@ Target-aware measures that train models use only the training part of fold 0 whe
 
 ## 9. Deviations
 
-Any change after the plan is frozen will be logged here with its date and reason.
+Any change after the plan is frozen will be logged here with its date and reason. Changes to the draft before freezing are also listed, for transparency.
+
+- **2026-09-25, section 4b, no TabPFN in the recipe.** The GPU runner is down, and a CPU TabPFN run across the pool is not practical. The recipe is tuned LightGBM + CatBoost as CV bags (default + 16 random configs each), selected by inner out-of-fold AUC. Candidates are the best of each family and their average.
+- **2026-09-25, section 4b, smaller budget for the 3 datasets > 200,000 rows** (IEEE-CIS fraud, ATLAS Higgs, Homesite): default + 4 random configs per family, with a single 80/20 inner holdout. The full budget would dominate the phase's compute for little expected change in AUC. The effect is reported for the calibration datasets by comparing the 4-config and 16-config results.
