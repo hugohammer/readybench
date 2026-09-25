@@ -8,7 +8,7 @@ tabrepo,717,3583,rmftsa_ladata,2,508.0,11.0,10.0,1.0,0.0,0.0,1.2882882882882882,
 tabrepo,725,3591,bank8FM,2,8192.0,9.0,8.0,1.0,0.0,0.0,1.4771696401572425,synthetic,,bank8FM: simulated bank queues (Delve) binarized,True
 tabrepo,727,3593,2dplanes,2,40768.0,11.0,10.0,1.0,0.0,0.0,1.003538431295459,synthetic,,2dplanes: artificial function (Breiman) binarized,True
 tabrepo,734,3600,ailerons,2,13750.0,41.0,40.0,1.0,0.0,0.0,1.3592999313658205,binarized,,OpenML description: binarized from a numeric/multi-class target,True
-tabrepo,735,3601,cpu_small,3,8192.0,13.0,12.0,1.0,0.0,0.0,2.307226483649576,binarized,,OpenML description: binarized from a numeric/multi-class target,True
+tabrepo,735,3601,cpu_small,3,8192.0,13.0,12.0,1.0,0.0,0.0,2.307226483649576,duplicate,,cpu_small: subset of the cpu_act columns (did 761); same rows,False
 tabrepo,740,3606,fri_c3_1000_10,2,1000.0,11.0,10.0,1.0,0.0,0.0,1.2727272727272727,synthetic,,Friedman artificial data (fri_*),True
 tabrepo,742,3608,fri_c4_500_100,2,500.0,101.0,100.0,1.0,0.0,0.0,1.304147465437788,synthetic,,Friedman artificial data (fri_*),True
 tabrepo,750,3616,pm10,2,500.0,8.0,7.0,1.0,0.0,0.0,1.032520325203252,binarized,,OpenML description: binarized from a numeric/multi-class target,True

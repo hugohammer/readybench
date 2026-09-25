@@ -44,6 +44,8 @@ did,category,flag,reason
 41145,primary,anonymized,philippine: ChaLearn AutoML data; origin undisclosed
 41146,primary,anonymized,sylvine: ChaLearn AutoML data; origin undisclosed
 23517,primary,anonymized,numerai28.6: encrypted stock-market features
+# Duplicates found by column fingerprints (phase1_report)
+735,duplicate,,cpu_small: subset of the cpu_act columns (did 761); same rows
 # Extension (D1): duplicates of data already in the pool
 29,duplicate,,credit-approval is Quinlan's credit data = Australian (did 40981) in TabRepo
 44155,duplicate,,credit-approval_reproduced = Australian (did 40981) in TabRepo
