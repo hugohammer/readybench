@@ -28,6 +28,7 @@ variables:
       - "fetch_tabrepo_tables"
       - "phase1_profile_pool"
       - "phase2_gold"
+      - "phase2_leakage_screen"
   TASK_ARGS:
     value: ""
     description: "Extra command-line arguments passed to the script"
