@@ -11,7 +11,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from .paths import CACHE, setup_openml_cache
+from .paths import CACHE, ROOT, setup_openml_cache
 
 DATASETS = CACHE / "datasets"
 SPLITS = CACHE / "splits"
@@ -65,7 +65,19 @@ def fetch(did: int, tid: int) -> dict:
     return {"did": did, "tid": tid, "cached": False, "positive_label": str(minority), "n_folds": n_folds}
 
 
-def load(did: int) -> tuple[pd.DataFrame, pd.Series]:
+def leakage_drops() -> dict[int, list[str]]:
+    """Columns removed from every dataset load (configs/leakage_fixes.csv)."""
+    fixes = pd.read_csv(ROOT / "configs" / "leakage_fixes.csv")
+    return {int(r.did): r.columns.split(";") for r in fixes.itertuples()}
+
+
+def load(did: int, apply_leakage_fixes: bool = True) -> tuple[pd.DataFrame, pd.Series]:
     df = pd.read_parquet(dataset_path(did))
     y = df.pop(TARGET)
+    if apply_leakage_fixes:
+        drop = leakage_drops().get(did, [])
+        missing = set(drop) - set(df.columns)
+        if missing:
+            raise KeyError(f"leakage fix for {did} names unknown columns {missing}")
+        df = df.drop(columns=drop)
     return df, y

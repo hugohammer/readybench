@@ -68,7 +68,6 @@ did,category,flag,reason
 1018,binarized,,ipums_la_99-small: majority class vs rest
 1002,binarized,,ipums_la_98-small: majority class vs rest
 43891,binarized,,communities-and-crime: crime rate thresholded at 0.2
-897,binarized,,colleges_aaup: numeric target split at the mean
 # Extension: kept, with notes
 41160,primary,anonymized,rl: 4Paradigm challenge data; origin undisclosed
 470,primary,odd-target,profb: target is whether the favourite played at home
@@ -77,3 +76,7 @@ did,category,flag,reason
 46422,primary,provenance,Credit-Risk-Classification-Dataset: Kaggle upload; provenance thin
 24,primary,near-ceiling,mushroom: known to be almost perfectly separable
 45550,primary,simulated-physics,ATLAS Higgs challenge: Monte Carlo events (like Higgs/MiniBooNE in TabRepo)
+# Leakage that cannot be repaired by dropping a few columns (phase2_leakage_screen + review)
+46630,leakage,,Skin_Cancer: metadata missingness predicts biopsied (AUC 0.93) and diagnostic determines it for 3 of 6 classes
+823,leakage,,houses: latitude alone predicts the binarized target (AUC 0.995)
+897,leakage,,colleges_aaup: number of associate professors alone predicts the binarized target (AUC 0.992)

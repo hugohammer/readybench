@@ -200,12 +200,15 @@ def main() -> None:
     parser.add_argument("--min-rows", type=int, default=0)
     parser.add_argument("--max-rows", type=int, default=10**9)
     parser.add_argument("--threads", type=int, default=1, help="threads per unit")
+    parser.add_argument("--dids", default="", help="comma-separated dataset ids to (re)run")
     parser.add_argument("--aggregate-only", action="store_true")
     args = parser.parse_args()
 
     seed = yaml.safe_load((ROOT / "configs" / "study_a.yaml").read_text())["seed"]
     datasets = select_datasets()
     datasets = datasets[datasets.NumberOfInstances.between(args.min_rows, args.max_rows)]
+    if args.dids:
+        datasets = datasets[datasets.did.isin([int(d) for d in args.dids.split(",")])]
     if args.limit_datasets:
         datasets = datasets.sort_values("NumberOfInstances").head(args.limit_datasets)
     print(datasets.groupby("role").size().to_string(), flush=True)

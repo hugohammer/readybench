@@ -1,0 +1,5 @@
+did,columns,reason
+46527,2019_price_var,screen: the class is derived from next-year price change (AUC 1.000)
+44224,END_DATE  (YYYYMMDD),screen: END_DATE is present exactly for cancelled memberships (missingness AUC 1.000)
+451,Educational_level,screen: educational level attained determines whether the Leaving Certificate was taken (AUC 1.000)
+46860,hospdead;d.time;sfdm2,review: post-outcome variables for target death (in-hospital death; follow-up time; 2-month status incl. died)
