@@ -36,7 +36,8 @@ The pool is frozen in `configs/pool_v1.csv` (Phase 1, 25 September 2026). The re
   - 6 binarized;
   - 11 duplicates of data already in the pool (e.g. credit-approval = Australian; German credit = credit-g; KDD Cup 2009 churn/upselling share the appetency features);
   - 3 text (excluded).
-- **Primary analysis:** 81 datasets. **Sensitivity analyses:** + binarized (24) and + synthetic (29).
+- **Primary analysis:** 80 datasets (after the Phase 2 leakage screen). **Sensitivity analyses:** + binarized (22) and + synthetic (29).
+- **Leakage screen (added in Phase 2):** flag a dataset if a single column or its missingness indicator reaches AUC ≥ 0.99 alone. Repairs by dropping named columns are in `configs/leakage_fixes.csv`; unrepairable datasets are excluded as `leakage`. See `docs/phase2_report.md`.
 - **Rules and review:** every category decision is recorded with a reason in `configs/pool_overrides.csv`. Datasets that stay in the pool but are borderline carry a flag (time-ordered, anonymized, odd target, provenance, near-ceiling, check). The anonymized and time-ordered flags define extra sensitivity analyses.
 - **Duplicate check:** column fingerprints (Jaccard of per-column signatures ≥ 0.5) across all pairs. Only cpu_small/cpu_act were found beyond the manual review.
 - **Effect of the extension:** datasets with missing values rise from 18% to 44% of the primary pool, and the 90th percentile of missing cells from 4% to 18%.
@@ -45,6 +46,7 @@ The pool is frozen in `configs/pool_v1.csv` (Phase 1, 25 September 2026). The re
 
 ## 4. Gold standard
 
+- **Status:** computed in Phase 2 → `results/gold_v1.csv`.
 - **(a) Primary:** the test ROC-AUC of AutoGluon (best quality, 4 h, 8 cores; `AutoGluon_bq_4h8c_2023_11_14`), averaged over TabRepo's 3 outer folds (OpenML task folds 0–2).
 - **Secondary gold standard:** per fold, the best TabRepo configuration chosen by *validation* error (so the choice does not peek at the test data), with its test AUC averaged over folds.
 - **Robustness check:** tuned boosted trees only (LightGBM, CatBoost, XGBoost), selected by validation error.
@@ -118,4 +120,6 @@ Target-aware measures that train models use only the training part of fold 0 whe
 Any change after the plan is frozen will be logged here with its date and reason. Changes to the draft before freezing are also listed, for transparency.
 
 - **2026-09-25, section 4b, no TabPFN in the recipe.** The GPU runner is down, and a CPU TabPFN run across the pool is not practical. The recipe is tuned LightGBM + CatBoost as CV bags (default + 16 random configs each), selected by inner out-of-fold AUC. Candidates are the best of each family and their average.
+- **2026-09-26, section 3, leakage screen added** after gold AUC = 1.000 on several extension datasets. Four datasets repaired by dropping leaking columns and three excluded. Details in `docs/phase2_report.md`.
+- **2026-09-26, section 4, secondary gold made uniform:** tuned boosting selected by validation for every dataset (TabRepo configs or our recipe), instead of TabRepo configs only.
 - **2026-09-25, section 4b, smaller budget for the 3 datasets > 200,000 rows** (IEEE-CIS fraud, ATLAS Higgs, Homesite): default + 4 random configs per family, with a single 80/20 inner holdout. The full budget would dominate the phase's compute for little expected change in AUC. The effect is reported for the calibration datasets by comparing the 4-config and 16-config results.
