@@ -1,0 +1,2 @@
+Vendored from https://github.com/vkola-lab/DREAMER at commit 96aabafbd57e37e213d7b7e2feea81bed7fddf2a (MIT licence).
+The package's pyproject.toml does not build, so the source is included here unchanged.

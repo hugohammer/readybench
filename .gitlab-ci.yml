@@ -29,6 +29,8 @@ variables:
       - "phase1_profile_pool"
       - "phase2_gold"
       - "phase2_leakage_screen"
+      - "phase3_dreamer"
+      - "phase3_measures"
   TASK_ARGS:
     value: ""
     description: "Extra command-line arguments passed to the script"
@@ -83,9 +85,30 @@ probe:
 run:
   extends: .base
   rules:
-    - if: '$TASK != "probe_runner"'
+    - if: '$TASK != "probe_runner" && $TASK != "phase3_dreamer"'
   tags:
     - $RUNNER_TAG
   timeout: 96h            # GitLab caps this at the chosen runner's own maximum
   script:
     - python "scripts/$TASK.py" $TASK_ARGS
+
+# DREAMER needs the old library versions it was written for (Python 3.10,
+# pandas 1.5, numpy 1.23), so it gets its own image and environment.
+dreamer:
+  extends: .base
+  image: python:3.10-slim
+  rules:
+    - if: '$TASK == "phase3_dreamer"'
+  cache:
+    - key:
+        files: [ci/requirements-dreamer.txt]
+      paths: [.cache/pip/]
+    - key: "datasets-v1"
+      paths: [data_cache/datasets/, data_cache/splits/, data_cache/tabrepo/]
+  tags:
+    - $RUNNER_TAG
+  timeout: 96h
+  before_script:
+    - bash ci/setup_dreamer_env.sh
+  script:
+    - python scripts/phase3_dreamer.py $TASK_ARGS

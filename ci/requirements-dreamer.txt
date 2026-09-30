@@ -1,0 +1,10 @@
+# DREAMER's own pins (third_party/dreamer, pyproject.toml), resolved to the last patch release
+pandas==1.5.3
+numpy==1.23.5
+scikit-learn==1.2.2
+scipy==1.10.1
+numba==0.56.4
+tqdm==4.65.2
+# needed by the ReadyBench driver to read the cached datasets
+pyarrow==14.0.2
+pyyaml==6.0.2
