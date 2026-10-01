@@ -11,12 +11,20 @@ authors' recommended 1,000-1,000,000), one subprocess per dataset in its own
 folder, wall-clock timeout per dataset. The readiness score is the master
 table's "Total Quality"; its components are recorded too.
 
+Note on DREAMER's "subtables" setting: the code starts one run per entry of
+"cores" and every run draws "subtables" subtables, so the total is
+cores x subtables (the README describes it as the total). We fix the TOTAL
+(--total-subtables, default 1,000) and set subtables = ceil(total / runs).
+A first attempt with cores=56 and subtables=1000 (56,000 per dataset) took
+about an hour per dataset (pipeline 9283, canceled).
+
 Writes outputs/phase3/dreamer.csv (one row per dataset).
-  python scripts/phase3_dreamer.py --subtables 1000 --cores 56 [--dids 31,37] [--timeout-min 45]
+  python scripts/phase3_dreamer.py --total-subtables 1000 --runs 40 [--dids 31,37] [--timeout-min 45]
 """
 
 import argparse
 import json
+import math
 import os
 import shutil
 import subprocess
@@ -65,19 +73,21 @@ def prepare_csv(did: int, folder: Path, seed: int) -> tuple[int, int]:
     return X.shape
 
 
-def run_one(did: int, subtables: int, cores: int, timeout_min: float, seed: int) -> dict:
+def run_one(did: int, total_subtables: int, runs: int, timeout_min: float, seed: int) -> dict:
     folder = WORK / str(did)
     shutil.rmtree(folder, ignore_errors=True)
     folder.mkdir(parents=True)
     n, p = prepare_csv(did, folder, seed)
+    per_run = math.ceil(total_subtables / runs)
     (folder / "DREAMER_Config.json").write_text(json.dumps({
-        "search_space": {"subtables": subtables, "cores": cores},
+        "search_space": {"subtables": per_run, "cores": runs},
         "data_settings": {"file_name": "data.csv", "target_column": "target", "output_folder": "out"},
         "free_params": {"rows_exclusion_ratio": 0.7, "columns_exclusion_ratio": 0.5,
                         "clustering_weight": 0.5, "classification_weight": 0.5, "precision": 4}}))
     env = {**os.environ, "PYTHONPATH": str(DREAMER_SRC), "OMP_NUM_THREADS": "1", "PYTHONHASHSEED": str(seed)}
     start = time.perf_counter()
-    row = {"did": did, "n_rows_used": n, "n_features_used": p, "subtables": subtables, "cores": cores}
+    row = {"did": did, "n_rows_used": n, "n_features_used": p, "runs": runs, "subtables_per_run": per_run,
+           "subtables_total": per_run * runs}
     try:
         proc = subprocess.run([sys.executable, "-c", "from DREAMER import DREAMER; DREAMER().run()"],
                               cwd=folder, env=env, capture_output=True, text=True, timeout=timeout_min * 60)
@@ -97,8 +107,8 @@ def run_one(did: int, subtables: int, cores: int, timeout_min: float, seed: int)
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--subtables", type=int, default=1000)
-    parser.add_argument("--cores", type=int, default=0, help="DREAMER worker processes (0 = all)")
+    parser.add_argument("--total-subtables", type=int, default=1000)
+    parser.add_argument("--runs", type=int, default=40, help="DREAMER runs = parallel worker tasks ('cores')")
     parser.add_argument("--timeout-min", type=float, default=45)
     parser.add_argument("--dids", default="")
     parser.add_argument("--seed", type=int, default=20260924)
@@ -117,7 +127,7 @@ def main() -> None:
     for i, d in enumerate(pool.sort_values("NumberOfFeatures").itertuples(), 1):
         if d.did in done:
             continue
-        row = run_one(int(d.did), args.subtables, args.cores, args.timeout_min, args.seed)
+        row = run_one(int(d.did), args.total_subtables, args.runs, args.timeout_min, args.seed)
         pd.DataFrame([row]).to_csv(target, mode="a", header=not target.exists(), index=False)
         status = f"TQ={row.get('dreamer_Total Quality')}" if row["ok"] else f"FAILED {row['error'][:120]}"
         print(f"[{i}/{len(pool)}] {d.name} ({row['n_rows_used']}x{row['n_features_used']}): "

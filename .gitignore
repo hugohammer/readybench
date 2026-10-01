@@ -8,3 +8,4 @@ tools/gitlab.env
 .cache/
 logs/
 scratch/
+.venv-dreamer/
