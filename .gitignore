@@ -9,3 +9,4 @@ tools/gitlab.env
 logs/
 scratch/
 .venv-dreamer/
+.venv-gpu/

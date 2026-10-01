@@ -385,3 +385,35 @@ def empirical(X: pd.DataFrame, y: pd.Series, tid: int) -> dict:
 
 GROUPS = {"aidrin": aidrin, "icirca": icirca, "thesis": thesis_manual, "complexity": complexity,
           "relevance": relevance, "landmarkers": landmarkers, "empirical": empirical}
+
+
+# ------------------------------------------------------------------ R6 TabPFN probe (GPU, run locally)
+TABPFN_ROWS = 10_000
+TABPFN_MAX_FEATURES = 500  # TabPFN v2 pre-training limit
+_register({"tabpfn_auc": +1})
+
+
+def tabpfn_probe(X: pd.DataFrame, y: pd.Series, device: str = "cuda") -> dict:
+    """TabPFN v2 (Hollmann et al., Nature 2025; tabpfn==2.0.9, ungated v2 weights)
+    as a cheap readiness probe: 5-fold stratified CV AUC on <= 10,000 rows, no tuning.
+    Categoricals as ordinal codes, flagged to TabPFN as categorical; missing values
+    passed through (TabPFN handles NaN). Datasets with > 500 features use a random
+    (seeded) subset of 500 features."""
+    from sklearn.model_selection import StratifiedKFold
+    from tabpfn import TabPFNClassifier
+
+    X, y = stratified_subsample(X, y, TABPFN_ROWS)
+    cats = set(categorical_columns(X))
+    if X.shape[1] > TABPFN_MAX_FEATURES:
+        keep = np.sort(np.random.default_rng(0).choice(X.shape[1], TABPFN_MAX_FEATURES, replace=False))
+        X = X.iloc[:, keep]
+    cat_idx = [i for i, c in enumerate(X.columns) if c in cats]
+    Xn = ordinal_numeric(X).to_numpy(dtype="float32")
+    yv = y.to_numpy()
+    aucs = []
+    for tr, te in StratifiedKFold(5, shuffle=True, random_state=0).split(Xn, yv):
+        clf = TabPFNClassifier(device=device, random_state=0, categorical_features_indices=cat_idx or None,
+                               memory_saving_mode="auto")
+        clf.fit(Xn[tr], yv[tr])
+        aucs.append(roc_auc_score(yv[te], clf.predict_proba(Xn[te])[:, 1]))
+    return {"tabpfn_auc": float(np.mean(aucs))}

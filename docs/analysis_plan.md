@@ -1,6 +1,6 @@
 # ReadyBench analysis plan (pre-registration draft)
 
-*Status: draft 0.1, 24 September 2026. To be frozen, with a commit hash and date, before any readiness measure is compared with the gold standard.*
+*Status: draft 0.2, 1 October 2026. To be frozen, with a commit hash and date (git tag `prereg-v1`), before any readiness measure is compared with the gold standard. No such comparison has been made as of this draft.*
 *Authors: Jonas Lysfjord Kemi, Hugo Lewi Hammer (+ Fraktal contact, to be decided).*
 
 Items marked **[DECISION]** need an answer before the plan is frozen.
@@ -21,6 +21,43 @@ Items marked **[DECISION]** need an answer before the plan is frozen.
 
 Everything else is exploratory and will be reported as such.
 
+### 2a. Operational definitions (added 2026-10-01, before freezing)
+
+- **Oriented ρ:** Spearman ρ between a measure and the gold AUC, multiplied by the measure's pre-fixed direction (`measures.DIRECTION`), so positive means "agrees". Computed on the 80 primary datasets. A dataset is dropped for a measure only where that measure is undefined; the n is reported.
+- **Classical quality set Q (H1, H2):** 16 measures.
+  - AIDRIN: `aidrin_completeness`, `aidrin_duplicity`, `aidrin_outliers`, `aidrin_constant_frac`, `aidrin_max_pairwise_corr`, `aidrin_max_abs_skew`, `aidrin_max_abs_kurtosis`, `aidrin_row_completeness`, `aidrin_feature_coverage`, `aidrin_imbalance_degree`.
+  - ICIRCA: `icirca_dqi` (as published).
+  - Thesis: `thesis_manual_score` and `thesis_c1`–`c4`.
+  - The two composite scores are `thesis_manual_score` and `icirca_dqi`.
+- **Target-aware set T (H2):** 9 measures: `rel_max_abs_r`, `rel_max_single_auc`, `rel_mean_top5_auc`, `rel_max_norm_mi`, `lm_stump_auc`, `lm_nn1_auc`, `lm_naive_bayes_auc`, `lm_logreg_auc`, `tabpfn_auc`.
+- **Measures in neither set** (reported, exploratory):
+  - the target-aware AIDRIN relevance metrics;
+  - DREAMER Total Quality and its components (a mixture of quality and target-aware parts);
+  - the 22 PyMFE complexity measures;
+  - `icirca_dqi_corrected`.
+- **H1 is supported** if, for both composite scores, the oriented ρ has a point estimate < 0.3 and a 95% CI upper bound < 0.5, *and* at least 80% of the measures in Q have |ρ| < 0.3.
+- **H2 procedure:**
+  - The 80 primary datasets are split at random (seed 20260924) into a selection part (24) and a test part (56).
+  - The measure with the highest oriented ρ in T, and in Q, is chosen on the selection part.
+  - On the test part, the paired bootstrap (10,000 resamples) gives a CI for ρ_T − ρ_Q.
+  - **H2 is supported** if the 95% CI lies above 0.
+- **H3 is supported** if the oriented ρ of `emp_mean_auc` (the thesis baselines, AUC version) is ≥ 0.85. Its CI is reported.
+- **Multiplicity:** H2 is the only significance test among H1–H3, so the Holm correction listed in draft 0.1 is not needed for H1–H3. It applies to the subgroup tests if any are reported with p-values.
+- **Feasibility detection:** for each measure, the AUROC for separating "not feasible" (gold AUC < 0.80) from feasible datasets, with a bootstrap CI.
+- **Sensitivity analyses:**
+
+  | Code | Change |
+  |---|---|
+  | S1 | without the time-ordered datasets |
+  | S2 | without the anonymized datasets |
+  | S3 | without datasets flagged check / provenance / odd-target / near-ceiling / simulated-physics |
+  | S4 | + binarized datasets |
+  | S5 | + synthetic datasets |
+  | S6 | secondary (uniform) gold standard |
+  | S7 | feasibility thresholds 0.75 and 0.85 |
+  | S8 | TabRepo datasets only (no own gold) |
+  | S9 | the thesis's original empirical score (macro-F1 × 100) instead of AUC |
+
 ## 3. Datasets (Study A)
 
 The pool is frozen in `configs/pool_v1.csv` (Phase 1, 25 September 2026). The report is in `docs/phase1_report.md`.
@@ -40,6 +77,11 @@ The pool is frozen in `configs/pool_v1.csv` (Phase 1, 25 September 2026). The re
 - **Leakage screen (added in Phase 2):** flag a dataset if a single column or its missingness indicator reaches AUC ≥ 0.99 alone. Repairs by dropping named columns are in `configs/leakage_fixes.csv`; unrepairable datasets are excluded as `leakage`. See `docs/phase2_report.md`.
 - **Rules and review:** every category decision is recorded with a reason in `configs/pool_overrides.csv`. Datasets that stay in the pool but are borderline carry a flag (time-ordered, anonymized, odd target, provenance, near-ceiling, check). The anonymized and time-ordered flags define extra sensitivity analyses.
 - **Duplicate check:** column fingerprints (Jaccard of per-column signatures ≥ 0.5) across all pairs. Only cpu_small/cpu_act were found beyond the manual review.
+- **Review decisions (D3, 2026-10-01; made by the analysis team under delegation from H. L. Hammer).**
+  - All 18 flagged datasets stay in the primary pool. Their flags define sensitivity analyses S1–S3 instead of exclusions.
+  - `churn` (did 40701) stays flagged `check`: whether it is artificial cannot be settled from OpenML, so it falls under S3.
+  - The leakage decisions in `configs/leakage_fixes.csv` and the `leakage` exclusions are confirmed.
+  - No pool decision is revisited after the plan is frozen, except for errors, which would be logged in section 9.
 - **Effect of the extension:** datasets with missing values rise from 18% to 44% of the primary pool, and the 90th percentile of missing cells from 4% to 18%.
 - **Remaining limitation:** missingness coded as a value (e.g. -1 in porto-seguro) is not counted as missing. Completeness is therefore understated for some datasets. The readiness tools under study share this blind spot.
 - **Feasibility cases (D2, AUC < 0.80):** 12 of the 55 primary TabRepo datasets; the extension adds more once its gold standard is computed.
@@ -85,7 +127,8 @@ Target-aware measures that train models use only the training part of fold 0 whe
   - **DREAMER** (vendored at commit 96aabaf, unchanged): run in its own environment with its pinned dependencies (Python 3.10, pandas 1.5, numpy 1.23, scikit-learn 1.2). Settings: 1,000 random subtables (the lower end of the authors' range), their example free parameters (row/column exclusion 0.7/0.5, equal clustering/classification weights), categoricals as ordinal codes (DREAMER requires numeric input), and a 60-minute limit per dataset. The readiness measure is the master table's *Total Quality*; its components are also recorded.
   - **ICIRCA DQI:** reimplemented from the tool's source (commit 28bad02; the repository has no licence, so no code is copied). `icirca_dqi` reproduces the tool exactly. This includes its treatment of missing or duplicate percentages ≤ 1 as ratios, e.g. 0.8% missing is scored as 80%. `icirca_dqi_corrected` (exploratory) uses true ratios.
   - **Thesis score:** ported from the thesis repository. It reproduces the thesis values, e.g. diabetes 83.64 vs 83.62 and kc2 68.04 vs 68.05; the small differences come from rounding in the thesis tables.
-  - **R6 (TabPFN probe) postponed** while the GPU runner is down. It will be added later as a separate group if feasible.
+  - **R6 TabPFN probe** (added 2026-10-01): TabPFN v2 (Hollmann et al., *Nature* 2025; `tabpfn==2.0.9`, ungated v2 weights; newer releases require a licence registration), 5-fold CV AUC on ≤ 10,000 rows, no tuning, categoricals flagged as such. Datasets with > 500 features use a seeded random subset of 500 (the v2 pre-training limit). It runs on a local GPU (RTX 4060, 8 GB; `scripts/phase3_tabpfn.py`, environment in `ci/requirements-gpu.txt`).
+  - **DREAMER subtables:** DREAMER's `subtables` setting is per run, and the number of runs equals its `cores` setting; its README describes it as the total. We fix 1,000 subtables in total (40 runs × 25), on ≤ 5,000 rows. A first attempt with 56 × 1,000 = 56,000 subtables per dataset took about 1 h each and was cancelled (pipeline 9283). Its 35 finished scores are kept for a robustness check against the final run.
 - **Recorded per measure:** wall-clock time on the reference machine, whether it needs labels, and whether it trains a model.
 - **Direction:** each measure's sign is fixed *before* analysis from its definition (higher means more ready). No sign flipping after looking at the results.
 - **Measures with several numbers:** evaluated (a) one metric at a time, and the tool's own aggregate where one exists; and (b) as an exploratory upper bound, a learned combination evaluated with leave-one-group-out CV across datasets (groups are dataset families, e.g. all GAMETES datasets).
