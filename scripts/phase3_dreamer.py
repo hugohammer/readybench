@@ -118,8 +118,6 @@ def main() -> None:
     pool = pool[pool.used]
     if args.dids:
         pool = pool[pool.did.isin([int(d) for d in args.dids.split(",")])]
-    for d in pool.itertuples():
-        data.fetch(int(d.did), int(d.tid))
 
     OUT.mkdir(parents=True, exist_ok=True)
     target = OUT / "dreamer.csv"
@@ -127,7 +125,12 @@ def main() -> None:
     for i, d in enumerate(pool.sort_values("NumberOfFeatures").itertuples(), 1):
         if d.did in done:
             continue
-        row = run_one(int(d.did), args.total_subtables, args.runs, args.timeout_min, args.seed)
+        try:
+            data.fetch(int(d.did), int(d.tid))
+            row = run_one(int(d.did), args.total_subtables, args.runs, args.timeout_min, args.seed)
+        except Exception as exc:  # one bad dataset must not stop the run
+            row = {"did": int(d.did), "ok": False, "seconds": 0.0, "n_rows_used": 0, "n_features_used": 0,
+                   "error": f"{type(exc).__name__}: {exc}"[:400]}
         pd.DataFrame([row]).to_csv(target, mode="a", header=not target.exists(), index=False)
         status = f"TQ={row.get('dreamer_Total Quality')}" if row["ok"] else f"FAILED {row['error'][:120]}"
         print(f"[{i}/{len(pool)}] {d.name} ({row['n_rows_used']}x{row['n_features_used']}): "

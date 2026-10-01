@@ -105,6 +105,7 @@ dreamer:
       paths: [.cache/pip/]
     - key: "datasets-v1"
       paths: [data_cache/datasets/, data_cache/splits/, data_cache/tabrepo/]
+      policy: pull   # read only: a DREAMER job must never overwrite the shared dataset cache
   tags:
     - $RUNNER_TAG
   timeout: 96h

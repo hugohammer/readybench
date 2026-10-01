@@ -420,7 +420,11 @@ def tabpfn_probe(X: pd.DataFrame, y: pd.Series, device: str = "cuda") -> dict:
     aucs = []
     for tr, te in StratifiedKFold(5, shuffle=True, random_state=0).split(Xn, yv):
         clf = TabPFNClassifier(device=device, random_state=0, categorical_features_indices=cat_idx or None,
-                               memory_saving_mode="auto")
+                               memory_saving_mode=True)
         clf.fit(Xn[tr], yv[tr])
         aucs.append(roc_auc_score(yv[te], clf.predict_proba(Xn[te])[:, 1]))
+        del clf
+        if device == "cuda":
+            import torch
+            torch.cuda.empty_cache()  # release GPU memory between folds (8 GB laptop GPU)
     return {"tabpfn_auc": float(np.mean(aucs))}

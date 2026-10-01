@@ -26,11 +26,29 @@ def split_path(tid: int) -> Path:
     return SPLITS / f"{tid}.parquet"
 
 
-def fetch(did: int, tid: int) -> dict:
-    """Make sure the dataset and its splits are cached; return basic facts."""
+def fetch(did: int, tid: int, attempts: int = 3) -> dict:
+    """Make sure the dataset and its splits are cached; return basic facts.
+
+    Downloads are retried; OpenML's copy of the dataset is removed between
+    attempts, because a corrupted download fails its checksum on every reuse."""
     if dataset_path(did).exists() and split_path(tid).exists():
         return {"did": did, "tid": tid, "cached": True}
+    import shutil
+    import time
 
+    from .paths import OPENML_CACHE
+
+    for attempt in range(1, attempts + 1):
+        try:
+            return _download(did, tid)
+        except Exception:
+            if attempt == attempts:
+                raise
+            shutil.rmtree(OPENML_CACHE / "org" / "openml" / "www" / "datasets" / str(did), ignore_errors=True)
+            time.sleep(20 * attempt)
+
+
+def _download(did: int, tid: int) -> dict:
     import openml
 
     setup_openml_cache()
