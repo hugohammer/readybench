@@ -1,0 +1,40 @@
+name,n_rows_used,n_features_used,total_quality,error,minutes
+Titanic,2201,3,,"goh/readybench/third_party/dreamer/DREAMER/DREAMER.py"", line 714, in runDREAMER |     res = pool.map(self.smap, f_array)",0.2
+blood-transfusion-service-center,748,4,0.5791,,9.0
+visualizing_soil,5000,4,0.9449,,46.6
+arsenic-female-bladder,559,4,0.6726,,8.6
+mozilla4,5000,5,0.8809,,49.8
+fri_c0_500_5,500,5,0.919,,8.8
+fri_c0_1000_5,1000,5,0.9464,,11.1
+irish,500,4,0.9354,,8.6
+phoneme,5000,5,0.8619,,50.9
+wilt,4839,5,0.7279,,48.4
+delta_ailerons,5000,5,0.903,,46.6
+open_payments,5000,5,0.8813,,48.3
+pollen,3848,5,0.708,,42.8
+Run_or_walk_information,5000,6,0.8921,,55.1
+mammography,5000,6,0.664,,46.1
+delta_elevators,5000,6,0.8621,,48.4
+no2,500,7,0.7568,,9.1
+airlines,5000,7,0.7667,,53.5
+pm10,500,7,0.7791,,9.2
+diabetes,768,8,0.728,,10.3
+kin8nm,5000,8,0.8926,,58.2
+bank8FM,5000,8,0.9149,,57.9
+electricity,5000,8,0.7783,,53.1
+puma8NH,5000,8,,timeout after 60.0 min,60.0
+kdd_el_nino-small,782,8,0.8801,,9.9
+Amazon_employee_access,5000,9,0.889,,53.7
+profb,672,9,0.8274,,9.8
+2dplanes,5000,10,0.9007,,47.6
+Give-Me-Some-Credit,5000,10,0.8684,,51.3
+ilpd,583,10,0.6171,,9.7
+rmftsa_ladata,508,10,0.5563,,9.4
+fri_c3_1000_10,1000,10,0.8277,,12.5
+fri_c3_500_10,500,10,0.8014,,9.7
+parity5_plus_5,1124,10,0.6095,,11.4
+fried,5000,10,0.8612,,58.9
+Click_prediction_small,5000,11,,timeout after 60.0 min,60.0
+MagicTelescope,5000,10,,timeout after 60.0 min,60.0
+Loan-Predication,614,11,0.8556,,9.6
+HMEQ_Data_New,5000,12,0.8773,,58.8
