@@ -383,6 +383,13 @@ def empirical(X: pd.DataFrame, y: pd.Series, tid: int) -> dict:
     return out
 
 
+# ------------------------------------------------------------------ R1b DREAMER (computed by scripts/phase3_dreamer.py)
+# Every master-table field is defined by DREAMER so that higher is better.
+DREAMER_FIELDS = ["1-PC", "1-SpearmanCorrelation", "1-NullRatio", "1-Outliers", "1-ClassOverlap",
+                  "Classify Accuracy", "Clustering Accuracy", "Average Accuracy", "Total Quality"]
+_register({f"dreamer_{f}": +1 for f in DREAMER_FIELDS})
+
+
 GROUPS = {"aidrin": aidrin, "icirca": icirca, "thesis": thesis_manual, "complexity": complexity,
           "relevance": relevance, "landmarkers": landmarkers, "empirical": empirical}
 

@@ -170,6 +170,8 @@ Target-aware measures that train models use only the training part of fold 0 whe
 
 Any change after the plan is frozen will be logged here with its date and reason. Changes to the draft before freezing are also listed, for transparency.
 
+- **2026-10-01, after freezing, implementation detail:** directions for the DREAMER outputs were added to `measures.DIRECTION` (all +1, as DREAMER defines every master-table field so that higher is better). This applies the plan's rule (direction from the definition) and was done before any comparison with the gold standard.
+
 - **2026-09-25, section 4b, no TabPFN in the recipe.** The GPU runner is down, and a CPU TabPFN run across the pool is not practical. The recipe is tuned LightGBM + CatBoost as CV bags (default + 16 random configs each), selected by inner out-of-fold AUC. Candidates are the best of each family and their average.
 - **2026-09-26, section 3, leakage screen added** after gold AUC = 1.000 on several extension datasets. Four datasets repaired by dropping leaking columns and three excluded. Details in `docs/phase2_report.md`.
 - **2026-09-26, section 4, secondary gold made uniform:** tuned boosting selected by validation for every dataset (TabRepo configs or our recipe), instead of TabRepo configs only.
