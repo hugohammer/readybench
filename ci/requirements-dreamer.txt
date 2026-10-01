@@ -8,3 +8,5 @@ tqdm==4.65.2
 # needed by the ReadyBench driver to read the cached datasets
 pyarrow==14.0.2
 pyyaml==6.0.2
+# needed when a dataset is not yet in the runner cache (compatible with the pins above)
+openml==0.14.2
