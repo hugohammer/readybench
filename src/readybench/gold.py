@@ -110,23 +110,23 @@ def fit_predict(family: str, params: dict, threads: int, X_tr, y_tr, X_va, y_va,
     return model.predict_proba(Xva)[:, 1], model.predict_proba(Xte)[:, 1], model.get_best_iteration()
 
 
-def inner_splits(y_train: np.ndarray, seed: int):
+def inner_splits(y_train: np.ndarray, seed: int, holdout: bool = False):
     idx = np.arange(len(y_train))
-    if len(y_train) > HOLDOUT_ROWS:
+    if holdout or len(y_train) > HOLDOUT_ROWS:
         tr, va = train_test_split(idx, test_size=0.2, stratify=y_train, random_state=seed)
         return [(tr, va)]
     return list(StratifiedKFold(INNER_FOLDS, shuffle=True, random_state=seed).split(idx, y_train))
 
 
 def run_unit(X: pd.DataFrame, y: np.ndarray, cats: list[str], train_idx, test_idx,
-             family: str, params: dict, threads: int, seed: int) -> dict:
+             family: str, params: dict, threads: int, seed: int, holdout: bool = False) -> dict:
     """Train one config as a CV bag on the outer training fold."""
     start = time.perf_counter()
     X_train, y_train = X.iloc[train_idx], y[train_idx]
     X_test = X.iloc[test_idx]
     oof = np.full(len(train_idx), np.nan)
     test_pred = np.zeros(len(test_idx))
-    splits = inner_splits(y_train, seed)
+    splits = inner_splits(y_train, seed, holdout)
     iters = []
     for tr, va in splits:
         p_va, p_te, best = fit_predict(family, params, threads, X_train.iloc[tr], y_train[tr],

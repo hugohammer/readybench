@@ -335,7 +335,8 @@ def empirical_f345(X: pd.DataFrame, y: pd.Series, tid: int) -> dict:
     return {k.replace("emp_", "emp345_", 1): v for k, v in empirical(X, y, tid, folds=(3, 4, 5)).items()}
 
 
-def empirical(X: pd.DataFrame, y: pd.Series, tid: int, folds: tuple[int, ...] = (0, 1, 2)) -> dict:
+def empirical(X: pd.DataFrame, y: pd.Series, tid: int, folds: tuple[int, ...] = (0, 1, 2),
+              splits: pd.DataFrame | None = None) -> dict:
     """The thesis's 5 untuned baselines on OpenML folds 0-2 (the gold-standard folds).
     Preprocessing fitted on the training fold: median/mode imputation, one-hot for
     <= 30 levels, drop > 30 levels (the thesis encoding)."""
@@ -370,7 +371,8 @@ def empirical(X: pd.DataFrame, y: pd.Series, tid: int, folds: tuple[int, ...] = 
         "xgboost": lambda: make_pipeline(prep(False), XGBClassifier(n_estimators=100, random_state=42, n_jobs=1,
                                                                     eval_metric="logloss", verbosity=0)),
     }
-    splits = pd.read_parquet(data.split_path(tid))
+    if splits is None:
+        splits = pd.read_parquet(data.split_path(tid))
     aucs = {m: [] for m in models}
     f1s = {m: [] for m in models}
     for fold in folds:
@@ -396,9 +398,28 @@ DREAMER_FIELDS = ["1-PC", "1-SpearmanCorrelation", "1-NullRatio", "1-Outliers", 
 _register({f"dreamer_{f}": +1 for f in DREAMER_FIELDS})
 
 
+# ------------------------------------------------------------------ Study B: thesis baselines by CV on the given data
+_register({f"empcv_{m}_auc": +1 for m in BASELINES} | {"empcv_mean_auc": +1})
+
+
+def empirical_cv(X: pd.DataFrame, y: pd.Series) -> dict:
+    """The thesis's 5 baselines, 3-fold stratified CV AUC on the data as given (Study B: the
+    degraded training data, i.e. what a consultant can evaluate). Same preprocessing and caps
+    as `empirical`."""
+    from sklearn.model_selection import StratifiedKFold
+
+    X = X.reset_index(drop=True)
+    y = y.reset_index(drop=True)
+    folds = list(StratifiedKFold(3, shuffle=True, random_state=0).split(X, y))
+    splits = pd.DataFrame([{"fold": f, "row": r, "is_test": t} for f, (tr, te) in enumerate(folds)
+                           for rows, t in ((tr, False), (te, True)) for r in rows])
+    out = empirical(X, y, tid=None, folds=(0, 1, 2), splits=splits)
+    return {k.replace("emp_", "empcv_", 1): v for k, v in out.items() if k != "emp_mean_macro_f1"}
+
+
 GROUPS = {"aidrin": aidrin, "icirca": icirca, "thesis": thesis_manual, "complexity": complexity,
           "relevance": relevance, "landmarkers": landmarkers, "empirical": empirical}
-EXTRA_GROUPS = {"empirical_f345": empirical_f345}  # amendment A2; run explicitly with --groups
+EXTRA_GROUPS = {"empirical_f345": empirical_f345, "empirical_cv": empirical_cv}  # amendment A2; run explicitly with --groups
 
 
 # ------------------------------------------------------------------ R6 TabPFN probe (GPU, run locally)

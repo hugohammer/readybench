@@ -31,6 +31,7 @@ variables:
       - "phase2_leakage_screen"
       - "phase3_dreamer"
       - "phase3_measures"
+      - "phase5_studyB"
   TASK_ARGS:
     value: ""
     description: "Extra command-line arguments passed to the script"
