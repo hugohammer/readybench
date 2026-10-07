@@ -176,3 +176,38 @@ Any change after the plan is frozen will be logged here with its date and reason
 - **2026-09-26, section 3, leakage screen added** after gold AUC = 1.000 on several extension datasets. Four datasets repaired by dropping leaking columns and three excluded. Details in `docs/phase2_report.md`.
 - **2026-09-26, section 4, secondary gold made uniform:** tuned boosting selected by validation for every dataset (TabRepo configs or our recipe), instead of TabRepo configs only.
 - **2026-09-25, section 4b, smaller budget for the 3 datasets > 200,000 rows** (IEEE-CIS fraud, ATLAS Higgs, Homesite): default + 4 random configs per family, with a single 80/20 inner holdout. The full budget would dominate the phase's compute for little expected change in AUC. The effect is reported for the calibration datasets by comparing the 4-config and 16-config results.
+
+## 10. Amendment 1 (registered as git tag `prereg-v1.1`, 7 October 2026)
+
+**Status:** written *after* the Phase 4 results (section 2a analyses) were known, and *before* any outcome in this amendment was computed. Its analyses are therefore secondary. The predictions below are stated in advance so that they can fail. Motivation: the caveats in `docs/phase4_report.md`.
+
+### A1. Imbalance-sensitive gold metrics
+
+- **Model per dataset and fold** (OpenML folds 0–2): the uniform secondary-gold model (section 4).
+  - TabRepo datasets: the LightGBM/CatBoost configuration with the lowest validation error; its stored test predictions are downloaded from TabRepo. A check on three datasets reproduced TabRepo's AUC exactly.
+  - Extension datasets: the ReadyBench recipe's selected candidate (best LightGBM, best CatBoost, or their average, as chosen by inner OOF AUC in Phase 2), re-run with test predictions stored. A rerun must reproduce the recorded test AUC within 0.002; mismatches are reported.
+- **Metrics:** the positive class is the minority class; each metric is averaged over the three folds.
+  - **AP:** average precision. It depends on prevalence.
+  - **nAP** = (AP − π)/(1 − π), with π the test-fold prevalence: lift over a random ranking.
+  - **IG** = 1 − LL/H(π): log-loss relative to the prevalence-only baseline (information gain; higher is better).
+- **Predictions:**
+  - **P1.** With AP as the gold standard, `aidrin_imbalance_degree` and `thesis_c2_balance` have oriented ρ ≥ 0.3.
+  - **P2.** H1's decision rule (section 2a) holds with nAP and with IG as the gold standard.
+  - **P3.** H2's procedure (same selection/test split; best measures re-selected per metric) gives a CI above 0 for AP, nAP and IG.
+- **Exploratory:** the full ρ table for each metric. Feasibility is defined as the bottom quartile of each metric, because no threshold was pre-registered for these metrics.
+
+### A2. Empirical score on independent test folds
+
+- **Method:** the thesis's 5 baselines, unchanged, scored on OpenML folds 3–5. Their test rows are disjoint from the gold standard's test folds 0–2. Measures are prefixed `emp345_`.
+- **P4.** The oriented ρ of `emp345_mean_auc` with the gold AUC is ≥ 0.85 (H3 on independent folds). The difference from the shared-fold version is reported.
+
+### A3. Incremental value of classical measures (exploratory)
+
+- **Partial Spearman** correlation of each classical composite (`thesis_manual_score`, `icirca_dqi`, `dreamer_Total Quality`, `aidrin_completeness`) with the gold AUC, given (a) `tabpfn_auc` and (b) `lm_logreg_auc`.
+- **Leave-one-dataset-out linear regression** of the gold AUC on the probe alone vs. the probe plus these classical measures, compared by MAE.
+
+### A4. Common-hardware timing benchmark (exploratory)
+
+- **Setup:** all measure groups on one machine and one CPU core, for 20 primary datasets stratified by size.
+- **DREAMER:** timed with 100 subtables in one run, then scaled ×10 to 1,000 subtables (stated as an extrapolation).
+- **TabPFN:** reported on one CPU core and on the GPU separately.
