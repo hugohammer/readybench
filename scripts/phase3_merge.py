@@ -1,6 +1,6 @@
 """Phase 3, final step: one long table of all readiness measures.
 
-  python scripts/phase3_merge.py --measures-run outputs/runs/9276 --dreamer-run outputs/runs/9303 \
+  python scripts/phase3_merge.py --measures-run outputs/runs/9276 --dreamer results/raw/dreamer_v1.csv \
       --tabpfn outputs/phase3/tabpfn.csv
 
 Writes results/measures_v1.csv (did, group, measure, value) and
@@ -25,7 +25,7 @@ def phase3_dir(run: Path) -> Path:
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--measures-run", type=Path, required=True)
-    p.add_argument("--dreamer-run", type=Path, required=True)
+    p.add_argument("--dreamer", type=Path, required=True, help="DREAMER results CSV (one row per dataset)")
     p.add_argument("--tabpfn", type=Path, required=True)
     args = p.parse_args()
 
@@ -34,7 +34,7 @@ def main() -> None:
     timings = pd.read_csv(m_dir / "timings.csv").drop_duplicates(["did", "group"], keep="last")
     timings = timings[timings.ok][["did", "group", "seconds"]]
 
-    d = pd.read_csv(phase3_dir(args.dreamer_run) / "dreamer.csv").drop_duplicates("did", keep="last")
+    d = pd.read_csv(args.dreamer).drop_duplicates("did", keep="last")
     d_ok = d[d.ok.astype(bool)]
     dreamer = d_ok.melt(id_vars="did", value_vars=[f"dreamer_{f}" for f in DREAMER_FIELDS if f"dreamer_{f}" in d],
                         var_name="measure", value_name="value").assign(group="dreamer")
