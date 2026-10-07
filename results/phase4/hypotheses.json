@@ -1,0 +1,38 @@
+{
+  "H1": {
+    "composites": {
+      "thesis_manual_score": {
+        "rho": 0.06404125644631974,
+        "lo": -0.17511547707166764,
+        "hi": 0.2984397946453283,
+        "n": 80.0
+      },
+      "icirca_dqi": {
+        "rho": 0.01984693617588182,
+        "lo": -0.2025346779885801,
+        "hi": 0.2364033604006403,
+        "n": 80.0
+      }
+    },
+    "share_Q_abs_rho_below_0.3": 1.0,
+    "n_Q": 16,
+    "supported": true
+  },
+  "H2": {
+    "best_T_on_selection": "tabpfn_auc",
+    "best_Q_on_selection": "aidrin_outliers",
+    "n_selection": 24,
+    "n_test": 53,
+    "rho_diff": 1.0919075852016364,
+    "lo": 0.7453067656475756,
+    "hi": 1.3857937038465484,
+    "supported": true
+  },
+  "H3": {
+    "rho": 0.8820593962999026,
+    "lo": 0.756218264522464,
+    "hi": 0.9533728693518144,
+    "n": 79,
+    "supported": true
+  }
+}
