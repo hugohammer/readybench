@@ -49,7 +49,7 @@ def grouped_rho(df: pd.DataFrame, by, x: str, y: str) -> pd.Series:
 def load(run_dirs: list[Path]) -> tuple[pd.DataFrame, pd.DataFrame]:
     perf, meas = [], []
     for d in run_dirs:
-        base = d / "run" / "outputs" / "phase5"
+        base = d / "run" / "outputs" / "phase5" if (d / "run").exists() else d  # job artifacts or results/raw/studyB/<id>
         perf.append(pd.read_csv(base / "perf.csv"))
         meas.append(pd.read_csv(base / "measures.csv"))
     keys = ["did", "rep", "dtype", "level"]
