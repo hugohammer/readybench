@@ -81,10 +81,13 @@ def main() -> None:
                 status = f"error: {type(exc).__name__}"
             rows.append({"did": did, "group": g, "seconds": time.perf_counter() - start, "status": status})
         if (did, "dreamer_100x10") not in done:
+            dreamer_out = ROOT / "scratch" / "timing_dreamer" / f"{did}_{time.time_ns()}.csv"
             sec, status = timed_subprocess(
                 [str(ROOT / ".venv-dreamer/bin/python"), str(ROOT / "scripts/phase3_dreamer.py"), "--dids", str(did),
                  "--total-subtables", "100", "--runs", "1", "--timeout-min", str(args.limit_min),
-                 "--out", str(ROOT / "scratch" / "timing_dreamer" / f"{did}_{time.time_ns()}.csv")], env, limit + 60)
+                 "--out", str(dreamer_out)], env, limit + 60)
+            if status == "ok" and dreamer_out.exists() and not pd.read_csv(dreamer_out).ok.astype(bool).all():
+                status = "limit"  # DREAMER's own timeout exits normally; its result row says ok=False
             rows.append({"did": did, "group": "dreamer_100x10", "seconds": sec * 10, "status": status})
         for device in ("cpu", "cuda"):
             g = f"tabpfn_{device}"
