@@ -30,6 +30,7 @@ from sklearn.metrics import roc_auc_score
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from readybench import data, gold  # noqa: E402
+from readybench.metrics import secondary_metrics  # noqa: E402
 from readybench.paths import OUTPUTS, ROOT, TABREPO_CACHE  # noqa: E402
 
 FOLDS = [0, 1, 2]
@@ -56,7 +57,9 @@ def tabrepo_boosting_by_val() -> pd.DataFrame:
     return best.groupby("tid").metric_error.mean().rsub(1).rename("tabrepo_boost_byval_auc").reset_index()
 
 
-def select_datasets() -> pd.DataFrame:
+def select_datasets(extra_dids: tuple[int, ...] = ()) -> pd.DataFrame:
+    """Extension + calibration datasets, plus any other pool datasets named in extra_dids
+    (amendment A1: TabRepo datasets without stored predictions)."""
     pool = pd.read_csv(ROOT / "configs" / "pool_v1.csv")
     ext = pool[pool.used & (pool.source == "extension")].assign(role="extension")
     tr = pool[pool.used & (pool.source == "tabrepo") & (pool.category == "primary")
@@ -65,7 +68,9 @@ def select_datasets() -> pd.DataFrame:
     picks = np.unique(np.round(np.linspace(0, len(tr) - 1, CALIBRATION_N)).astype(int))
     cal = tr.iloc[picks].assign(role="calibration")
     cols = ["did", "tid", "name", "category", "NumberOfInstances", "NumberOfFeatures", "role"]
-    return pd.concat([ext[cols], cal[cols]], ignore_index=True)
+    extra = pool[pool.did.isin(extra_dids) & ~pool.did.isin(ext.did) & ~pool.did.isin(cal.did)].assign(
+        role="tabrepo_recipe")
+    return pd.concat([ext[cols], cal[cols], extra[cols]], ignore_index=True)
 
 
 @functools.lru_cache(maxsize=2)
@@ -170,12 +175,18 @@ def aggregate(datasets: pd.DataFrame) -> None:
             cands["average"] = (roc_auc_score(y_train[ok], oof[ok]), roc_auc_score(y_test, test))
         chosen = max(cands, key=lambda k: cands[k][0])
         row.update({"gold_choice": chosen, "gold_auc": cands[chosen][1], "n_units": len(g)})
+        # amendment A1: imbalance-sensitive metrics of the chosen candidate (y: minority class = 1)
+        chosen_pred = ((best["lightgbm"]["test"] + best["catboost"]["test"]) / 2 if chosen == "average"
+                       else best[chosen]["test"])
+        sec = secondary_metrics(y_test, chosen_pred)
+        row.update({"gold_ap": sec["ap"], "gold_nap": sec["nap"], "gold_ig": sec["ig"], "test_prevalence": sec["prevalence"]})
         rows.append(row)
 
     folds = pd.DataFrame(rows)
     folds.to_csv(OUT / "gold_folds.csv", index=False)
     per = folds.groupby("did").agg(gold_auc=("gold_auc", "mean"), gold_auc_sd=("gold_auc", "std"),
-                                    n_folds=("fold", "nunique"),
+                                    n_folds=("fold", "nunique"), gold_ap=("gold_ap", "mean"),
+                                    gold_nap=("gold_nap", "mean"), gold_ig=("gold_ig", "mean"),
                                     **{c: (c, "mean") for c in folds.columns if c.endswith("_auc")
                                        and c not in ("gold_auc",) and "oof" not in c}).reset_index()
     per = datasets.merge(per, on="did", how="left")
@@ -205,7 +216,8 @@ def main() -> None:
     args = parser.parse_args()
 
     seed = yaml.safe_load((ROOT / "configs" / "study_a.yaml").read_text())["seed"]
-    datasets = select_datasets()
+    extra = tuple(int(d) for d in args.dids.split(",")) if args.dids else ()
+    datasets = select_datasets(extra)
     datasets = datasets[datasets.NumberOfInstances.between(args.min_rows, args.max_rows)]
     if args.dids:
         datasets = datasets[datasets.did.isin([int(d) for d in args.dids.split(",")])]

@@ -327,9 +327,15 @@ def landmarkers(X: pd.DataFrame, y: pd.Series) -> dict:
 # ------------------------------------------------------------------ cheap empirical score (thesis baselines)
 BASELINES = ["logreg", "tree", "forest", "knn", "xgboost"]
 _register({f"emp_{m}_auc": +1 for m in BASELINES} | {"emp_mean_auc": +1, "emp_mean_macro_f1": +1})
+# amendment A2: the same baselines on OpenML folds 3-5 (test rows disjoint from the gold's folds 0-2)
+_register({f"emp345_{m}_auc": +1 for m in BASELINES} | {"emp345_mean_auc": +1, "emp345_mean_macro_f1": +1})
 
 
-def empirical(X: pd.DataFrame, y: pd.Series, tid: int) -> dict:
+def empirical_f345(X: pd.DataFrame, y: pd.Series, tid: int) -> dict:
+    return {k.replace("emp_", "emp345_", 1): v for k, v in empirical(X, y, tid, folds=(3, 4, 5)).items()}
+
+
+def empirical(X: pd.DataFrame, y: pd.Series, tid: int, folds: tuple[int, ...] = (0, 1, 2)) -> dict:
     """The thesis's 5 untuned baselines on OpenML folds 0-2 (the gold-standard folds).
     Preprocessing fitted on the training fold: median/mode imputation, one-hot for
     <= 30 levels, drop > 30 levels (the thesis encoding)."""
@@ -367,7 +373,7 @@ def empirical(X: pd.DataFrame, y: pd.Series, tid: int) -> dict:
     splits = pd.read_parquet(data.split_path(tid))
     aucs = {m: [] for m in models}
     f1s = {m: [] for m in models}
-    for fold in (0, 1, 2):
+    for fold in folds:
         s = splits[splits.fold == fold]
         tr, te = s.row[~s.is_test].to_numpy(), s.row[s.is_test].to_numpy()
         for name, make in models.items():
@@ -392,6 +398,7 @@ _register({f"dreamer_{f}": +1 for f in DREAMER_FIELDS})
 
 GROUPS = {"aidrin": aidrin, "icirca": icirca, "thesis": thesis_manual, "complexity": complexity,
           "relevance": relevance, "landmarkers": landmarkers, "empirical": empirical}
+EXTRA_GROUPS = {"empirical_f345": empirical_f345}  # amendment A2; run explicitly with --groups
 
 
 # ------------------------------------------------------------------ R6 TabPFN probe (GPU, run locally)

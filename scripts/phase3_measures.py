@@ -47,8 +47,8 @@ def work(did: int, tid: int, group: str, timeout_s: int) -> tuple[dict, list[dic
     start = time.perf_counter()
     try:
         X, y = data.load(did)
-        fn = measures.GROUPS[group]
-        values = fn(X, y, tid) if group == "empirical" else fn(X, y)
+        fn = {**measures.GROUPS, **measures.EXTRA_GROUPS}[group]
+        values = fn(X, y, tid) if group.startswith("empirical") else fn(X, y)
         timing = {"did": did, "group": group, "ok": True, "seconds": round(time.perf_counter() - start, 2), "error": ""}
         return timing, [{"did": did, "group": group, "measure": k, "value": v} for k, v in values.items()]
     except UnitTimeout:
