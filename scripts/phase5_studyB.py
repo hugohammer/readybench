@@ -168,10 +168,12 @@ def main() -> None:
         data.fetch(int(d.did), int(d.tid))
 
     ufile, pfile, mfile = OUT / "units.csv", OUT / "perf.csv", OUT / "measures.csv"
+    # finished units: this job's own file plus partial outputs of earlier jobs kept in results/raw/studyB/<pipeline>/
     done = set()
-    if ufile.exists():
-        u = pd.read_csv(ufile)
-        done = set(zip(u.loc[u.ok, "did"], u.loc[u.ok, "rep"], u.loc[u.ok, "dtype"], u.loc[u.ok, "level"]))
+    for f in [ufile, *sorted((ROOT / "results" / "raw" / "studyB").glob("*/units.csv"))]:
+        if f.exists():
+            u = pd.read_csv(f)
+            done |= set(zip(u.loc[u.ok, "did"], u.loc[u.ok, "rep"], u.loc[u.ok, "dtype"], u.loc[u.ok, "level"]))
     jobs = []
     for rep in reps:
         for d in base.itertuples():

@@ -139,3 +139,33 @@ did,group,seconds,status
 41144,dreamer_100x10,12012.397564250005,ok
 41144,tabpfn_cpu,11.141920251000556,"error: SET=1 or set ignore_pretraining_limits=True. Alternatively, consider using a GPU or the tabpfn-client API: https://github.com/PriorLabs/tabpfn-client "
 41144,tabpfn_cuda,73.85922365099941,ok
+41145,icirca,1.1271971489986754,ok
+41145,thesis,1.2668065119996754,ok
+41145,relevance,5.316936320001332,ok
+41145,landmarkers,4.164386853999531,ok
+41145,aidrin,15.001898094000353,ok
+41145,empirical,38.030676251999466,ok
+41145,complexity,96.5893293070003,ok
+41145,dreamer_100x10,12012.766827039995,ok
+41145,tabpfn_cpu,6.7124758630016,"error: SET=1 or set ignore_pretraining_limits=True. Alternatively, consider using a GPU or the tabpfn-client API: https://github.com/PriorLabs/tabpfn-client "
+41145,tabpfn_cuda,193.7564089339994,ok
+1169,icirca,0.022199367000212078,ok
+1169,thesis,0.3486846389987477,ok
+1169,relevance,0.7211189879999438,ok
+1169,landmarkers,1.201505803001055,ok
+1169,aidrin,10.676039291998677,ok
+1169,empirical,49.93980805499996,ok
+1169,complexity,9.932249759000115,ok
+1169,dreamer_100x10,2909.3980192900017,ok
+1169,tabpfn_cpu,2.807727185998374,"error: SET=1 or set ignore_pretraining_limits=True. Alternatively, consider using a GPU or the tabpfn-client API: https://github.com/PriorLabs/tabpfn-client "
+1169,tabpfn_cuda,14.483274932001223,ok
+42750,icirca,0.13048772000001918,ok
+42750,thesis,4.219281412999408,ok
+42750,relevance,3.4117011329999514,ok
+42750,landmarkers,2.449183221999192,ok
+42750,aidrin,9.176496845000656,ok
+42750,empirical,87.46753378699941,ok
+42750,complexity,17.91179367999939,ok
+42750,dreamer_100x10,3691.093474370009,ok
+42750,tabpfn_cpu,3.1207437320008466,"error: SET=1 or set ignore_pretraining_limits=True. Alternatively, consider using a GPU or the tabpfn-client API: https://github.com/PriorLabs/tabpfn-client "
+42750,tabpfn_cuda,44.92536612399999,ok
