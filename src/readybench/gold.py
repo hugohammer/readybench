@@ -11,6 +11,7 @@ Per OpenML outer fold (0-2):
     used to score the selected candidate.
 """
 
+import re
 import time
 import warnings
 
@@ -56,8 +57,18 @@ def sample_configs(family: str, n: int, seed: int) -> list[dict]:
 
 # ---------------------------------------------------------------- data handling
 def prepare(X: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
-    """Numeric columns stay numeric; everything else becomes a pandas category."""
+    """Numeric columns stay numeric; everything else becomes a pandas category.
+    Column names are reduced to [A-Za-z0-9_] (LightGBM rejects JSON special
+    characters, e.g. MagicTelescope's 'fLength:'); renaming does not affect training."""
     X = X.copy()
+    safe, seen = [], set()
+    for col in X.columns:
+        name = re.sub(r"[^0-9A-Za-z_]", "_", str(col)) or "col"
+        while name in seen:
+            name += "_"
+        seen.add(name)
+        safe.append(name)
+    X.columns = safe
     cats = []
     for col in X.columns:
         s = X[col]
