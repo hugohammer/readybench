@@ -211,3 +211,66 @@ Any change after the plan is frozen will be logged here with its date and reason
 - **Setup:** all measure groups on one machine and one CPU core, for 20 primary datasets stratified by size.
 - **DREAMER:** timed with 100 subtables in one run, then scaled ×10 to 1,000 subtables (stated as an extrapolation).
 - **TabPFN:** reported on one CPU core and on the GPU separately.
+
+## 11. Study B protocol (registered as git tag `prereg-v2`, 7 October 2026)
+
+**Status:** this section details the Study B outline (section 7) and operationalizes H4 (section 2). It was written after the Study A results were known, and *before* any Study B data were generated or computed.
+
+### B1. Base datasets
+
+- **Eligible:** the 80 primary datasets that have gold AUC ≥ 0.85 (room to degrade), no review flag, ≥ 1,000 rows and ≤ 100 features. The feature limit is needed because the redundant/irrelevant degradations multiply the width by up to 5.
+- **Chosen:** 24 datasets, evenly spaced over the row count of the eligible datasets (deterministic).
+- **Sizes:** per replication, the OpenML training fold is subsampled (stratified) to ≤ 8,000 rows and the test fold to ≤ 4,000 rows.
+- **Replications:** OpenML folds r = 0–4 give the train/test split; r also seeds the degradation.
+
+### B2. Degradations
+
+- **Scope:** applied to the training data only; the test data stay clean.
+- **Design:** 6 levels; level 0 is the clean training data, shared by all types.
+
+| Type | Levels 0–5 | Mechanism |
+|---|---|---|
+| `mcar` | 0, 5, 10, 20, 35, 50% of feature cells missing | uniformly at random |
+| `mar` | same fractions | row-wise probability increases with the rank of a random anchor feature; applied to all other features |
+| `mnar` | same fractions | per feature, probability increases with the rank of the value itself |
+| `label_noise` | 0, 5, 10, 20, 30, 40% of labels flipped | uniform |
+| `label_noise_minority` | 0, 10, 20, 40, 60, 80% of minority labels flipped to majority | class-dependent |
+| `minority_removal` | imbalance ratio × 1, 2, 4, 8, 16, 32 | minority rows removed at random (≥ 10 kept) |
+| `fewer_rows` | keep 100, 50, 25, 12.5, 6.25, 3.125% of rows | stratified (≥ 50 rows, ≥ 10 minority) |
+| `duplicates` | + 0, 10, 25, 50, 100, 200% rows | copies of random training rows |
+| `redundant` | + 0, 25, 50, 100, 200, 400% features (relative to p) | each a noisy linear combination of two random numeric features (correlation ≈ 0.95 with the combination) |
+| `irrelevant` | same proportions | standard normal noise features |
+| `outliers` | 0, 1, 2, 5, 10, 20% of numeric cells | replaced by Q3 + 10·IQR or Q1 − 10·IQR (random side) |
+
+### B3. Performance (the outcome)
+
+- **Model:** a lighter version of the gold recipe on the degraded training data. LightGBM and CatBoost, each with its default plus 4 random configurations (the first 4 of Phase 2's seeded draws). Early stopping and selection use an 80/20 inner holdout of the degraded training data. The candidates are the best of each family and their average.
+- **Scoring:** the selected candidate is scored on the clean test sample: AUC (primary), AP, nAP and IG (amendment A1 definitions).
+- **Outcome:** Δperf = perf(level) − perf(level 0) within dataset and replication.
+
+### B4. Measures
+
+- **Computed on the degraded training data only.** Groups: AIDRIN, ICIRCA DQI, thesis C1–C4, PyMFE complexity, relevance, landmarkers.
+- **Thesis baselines:** 3-fold stratified CV AUC on the degraded training data (`empcv_*`). The clean test set is not available to a consultant.
+- **TabPFN probe:** local GPU, replications 0–2 only (compute).
+- **Not in Study B: DREAMER.** It costs about 2 minutes on 40 cores per run, about 9 days for all units on the runner, and showed little signal in Study A.
+- **Change in a measure:** Δm = direction × (m(level) − m(level 0)), standardized by the measure's SD across the 80 primary datasets in Study A. Negative means "looks less ready".
+
+### B5. Operationalization of H4
+
+- **Targeted pairs** (measure ↔ the degradations it is designed to detect):
+  - completeness (`aidrin_completeness`, `aidrin_row_completeness`, `aidrin_feature_coverage`, `thesis_c1_completeness`) ↔ `mcar`, `mar`, `mnar`;
+  - `aidrin_duplicity` ↔ `duplicates`;
+  - `aidrin_outliers` ↔ `outliers`;
+  - imbalance (`aidrin_imbalance_degree`, `thesis_c2_balance`) ↔ `minority_removal`, `label_noise_minority`;
+  - `thesis_c3_sample_size` ↔ `fewer_rows`;
+  - redundancy (`aidrin_max_pairwise_corr`, `thesis_c4_feature_quality`) ↔ `redundant`.
+- **H4a (sensitivity)** is supported if ≥ 80% of the targeted pairs react. A pair *reacts* if the median over datasets of the within-(dataset, replication) Spearman correlation between level and Δm is ≤ −0.5.
+- **H4b (proportionality)** is supported if, for at least half of the targeted pairs, the median over datasets of the within-dataset Spearman correlation between Δm and ΔAUC (levels 0–5 × 5 replications) is < 0.5.
+- **H4c (false alarms):**
+  - A degradation type is *harmless* if its median ΔAUC at level 5 is > −0.01.
+  - A measure *false-alarms* on a harmless type if its median standardized Δm at level 5 is < −0.5.
+  - H4c is supported if at least one classical measure (set Q) false-alarms on `redundant` or `irrelevant`, provided at least one of the two is harmless; otherwise it is reported as not testable.
+- **Exploratory:**
+  - tracking over all degradations: per measure, the median over datasets of the pooled within-dataset Spearman correlation between Δm and ΔAUC across all types and levels, compared between sets Q and T;
+  - the same analyses with ΔAP and ΔIG.

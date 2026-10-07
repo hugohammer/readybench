@@ -56,7 +56,12 @@ def main() -> None:
     ap.add_argument("--limit-min", type=float, default=20)
     args = ap.parse_args()
     limit = args.limit_min * 60
-    done = set(zip(*pd.read_csv(OUT)[["did", "group"]].values.T)) if OUT.exists() else set()
+    done = set()
+    if OUT.exists():  # errors are retried, ok and limit entries are final
+        prev = pd.read_csv(OUT)
+        prev = prev[~prev.status.str.startswith("error")]
+        prev.to_csv(OUT, index=False)
+        done = set(zip(prev.did, prev.group))
     env = {**os.environ, "PYTHONPATH": str(ROOT / "src")}
 
     for d in pick_datasets(args.n).itertuples():
@@ -87,7 +92,7 @@ def main() -> None:
                 continue
             sec, status = timed_subprocess(
                 [str(ROOT / ".venv-gpu/bin/python"), str(ROOT / "scripts/phase3_tabpfn.py"), "--child", str(did), str(tid),
-                 "--device", device], env, limit)
+                 "--device", device], {**env, "TABPFN_ALLOW_CPU_LARGE_DATASET": "1"}, limit)
             rows.append({"did": did, "group": g, "seconds": sec, "status": status})
         pd.DataFrame(rows).to_csv(OUT, mode="a", header=not OUT.exists(), index=False)
         print(f"{d.name} ({int(d.NumberOfInstances)}x{int(d.NumberOfFeatures)}): "
