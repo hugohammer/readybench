@@ -43,6 +43,8 @@ MAX_ROWS = 5_000
 DREAMER_SRC = ROOT / "third_party" / "dreamer" / "DREAMER"
 WORK = ROOT / "scratch" / "dreamer"
 OUT = ROOT / "outputs" / "phase3"
+RESULT_COLUMNS = ["did", "n_rows_used", "n_features_used", "runs", "subtables_per_run", "subtables_total",
+                  "ok", "seconds", "error"]
 MASTER_FIELDS = ["1-PC", "1-SpearmanCorrelation", "1-NullRatio", "1-Outliers", "1-ClassOverlap",
                  "Classify Accuracy", "Clustering Accuracy", "Average Accuracy", "Total Quality"]
 
@@ -131,7 +133,9 @@ def main() -> None:
         except Exception as exc:  # one bad dataset must not stop the run
             row = {"did": int(d.did), "ok": False, "seconds": 0.0, "n_rows_used": 0, "n_features_used": 0,
                    "error": f"{type(exc).__name__}: {exc}"[:400]}
-        pd.DataFrame([row]).to_csv(target, mode="a", header=not target.exists(), index=False)
+        # fixed column order: successful and failed rows otherwise differ and break the CSV
+        columns = RESULT_COLUMNS + [f"dreamer_{k}" for k in MASTER_FIELDS]
+        pd.DataFrame([row]).reindex(columns=columns).to_csv(target, mode="a", header=not target.exists(), index=False)
         status = f"TQ={row.get('dreamer_Total Quality')}" if row["ok"] else f"FAILED {row['error'][:120]}"
         print(f"[{i}/{len(pool)}] {d.name} ({row['n_rows_used']}x{row['n_features_used']}): "
               f"{status} in {row['seconds'] / 60:.1f} min", flush=True)
