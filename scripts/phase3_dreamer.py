@@ -114,6 +114,7 @@ def main() -> None:
     parser.add_argument("--timeout-min", type=float, default=45)
     parser.add_argument("--dids", default="")
     parser.add_argument("--seed", type=int, default=20260924)
+    parser.add_argument("--out", type=Path, default=None, help="results CSV (default outputs/phase3/dreamer.csv)")
     args = parser.parse_args()
 
     pool = pd.read_csv(ROOT / "configs" / "pool_v1.csv")
@@ -122,7 +123,8 @@ def main() -> None:
         pool = pool[pool.did.isin([int(d) for d in args.dids.split(",")])]
 
     OUT.mkdir(parents=True, exist_ok=True)
-    target = OUT / "dreamer.csv"
+    target = args.out or OUT / "dreamer.csv"
+    target.parent.mkdir(parents=True, exist_ok=True)
     done = set(pd.read_csv(target).did) if target.exists() else set()
     for i, d in enumerate(pool.sort_values("NumberOfFeatures").itertuples(), 1):
         if d.did in done:
