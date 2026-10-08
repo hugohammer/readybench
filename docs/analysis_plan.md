@@ -170,6 +170,8 @@ Target-aware measures that train models use only the training part of fold 0 whe
 
 Any change after the plan is frozen will be logged here with its date and reason. Changes to the draft before freezing are also listed, for transparency.
 
+- **2026-10-08, Study B (B4), TabPFN:** TabPFN 2.0.9's fingerprint preprocessing step loops forever when two training rows are entirely missing. Its hash-collision loop never terminates on all-NaN rows; this was seen at MNAR level 5. The fingerprint feature is therefore disabled (`FINGERPRINT_FEATURE=False`) for **all** Study B TabPFN units, including level 0, so changes within Study B are consistent. Study A's TabPFN probe keeps the default. Units still exceeding 5 minutes are recorded as timeouts.
+- **2026-10-08, Study B runs:** replications 0–2 were first run concurrently on the 16-core runner. Two were killed for lack of memory; their finished units are kept (`results/raw/studyB/<pipeline>/`) and the remainders were rerun on the large runner. The computation per unit is unchanged.
 - **2026-10-01, after freezing, implementation detail:** directions for the DREAMER outputs were added to `measures.DIRECTION` (all +1, as DREAMER defines every master-table field so that higher is better). This applies the plan's rule (direction from the definition) and was done before any comparison with the gold standard.
 
 - **2026-09-25, section 4b, no TabPFN in the recipe.** The GPU runner is down, and a CPU TabPFN run across the pool is not practical. The recipe is tuned LightGBM + CatBoost as CV bags (default + 16 random configs each), selected by inner out-of-fold AUC. Candidates are the best of each family and their average.

@@ -428,7 +428,7 @@ TABPFN_MAX_FEATURES = 500  # TabPFN v2 pre-training limit
 _register({"tabpfn_auc": +1})
 
 
-def tabpfn_probe(X: pd.DataFrame, y: pd.Series, device: str = "cuda") -> dict:
+def tabpfn_probe(X: pd.DataFrame, y: pd.Series, device: str = "cuda", fingerprint: bool = True) -> dict:
     """TabPFN v2 (Hollmann et al., Nature 2025; tabpfn==2.0.9, ungated v2 weights)
     as a cheap readiness probe: 5-fold stratified CV AUC on <= 10,000 rows, no tuning.
     Categoricals as ordinal codes, flagged to TabPFN as categorical; missing values
@@ -447,8 +447,11 @@ def tabpfn_probe(X: pd.DataFrame, y: pd.Series, device: str = "cuda") -> dict:
     yv = y.to_numpy()
     aucs = []
     for tr, te in StratifiedKFold(5, shuffle=True, random_state=0).split(Xn, yv):
+        # fingerprint=False: TabPFN 2.0.9's fingerprint step loops forever when two rows are entirely
+        # missing (hash collision on all-NaN rows); Study B disables it for every unit.
         clf = TabPFNClassifier(device=device, random_state=0, categorical_features_indices=cat_idx or None,
-                               memory_saving_mode=True)
+                               memory_saving_mode=True,
+                               inference_config=None if fingerprint else {"FINGERPRINT_FEATURE": False})
         clf.fit(Xn[tr], yv[tr])
         aucs.append(roc_auc_score(yv[te], clf.predict_proba(Xn[te])[:, 1]))
         del clf

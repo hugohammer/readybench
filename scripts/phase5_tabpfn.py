@@ -22,12 +22,26 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "scripts"))
-OUT = ROOT / "outputs" / "phase5" / "tabpfn.csv"
+OUT = ROOT / "outputs" / "phase5" / "tabpfn_nofp.csv"  # all units without the fingerprint feature
 COLS = ["did", "rep", "dtype", "level", "tabpfn_auc", "seconds", "error"]
 
 
+UNIT_TIMEOUT_S = 300  # a unit hung for 18 h on the CPU (pc1, mnar level 5); hangs are now recorded as timeouts
+
+
+class UnitTimeout(Exception):
+    pass
+
+
+def _alarm(signum, frame):
+    raise UnitTimeout()
+
+
 def child(did: int, tid: int, reps: list[int], done: set) -> None:
+    import signal
+
     warnings.filterwarnings("ignore")
+    signal.signal(signal.SIGALRM, _alarm)
     import phase5_studyB as b
     from readybench import degrade, measures
 
@@ -39,11 +53,16 @@ def child(did: int, tid: int, reps: list[int], done: set) -> None:
                 continue
             start = time.perf_counter()
             row = {"did": did, "rep": rep, "dtype": dtype, "level": level, "tabpfn_auc": None, "error": ""}
+            signal.alarm(UNIT_TIMEOUT_S)
             try:
                 Xd, yd = (Xtr, ytr) if dtype == "clean" else degrade.apply(Xtr, ytr, dtype, level, rep)
-                row["tabpfn_auc"] = measures.tabpfn_probe(Xd, pd.Series(yd), device="cuda")["tabpfn_auc"]
+                row["tabpfn_auc"] = measures.tabpfn_probe(Xd, pd.Series(yd), device="cuda", fingerprint=False)["tabpfn_auc"]
+            except UnitTimeout:
+                row["error"] = f"timeout after {UNIT_TIMEOUT_S} s"
             except Exception as exc:
                 row["error"] = f"{type(exc).__name__}: {exc}"[:200]
+            finally:
+                signal.alarm(0)
             row["seconds"] = round(time.perf_counter() - start, 2)
             print("ROW " + json.dumps(row), flush=True)
 
@@ -58,7 +77,7 @@ def main() -> None:
     done = set()
     if OUT.exists():
         prev = pd.read_csv(OUT)
-        prev = prev[prev.error.isna() | (prev.error == "")]
+        prev = prev[prev.error.isna() | (prev.error == "") | prev.error.str.startswith("timeout")]
         done = set(zip(prev.did, prev.rep, prev.dtype, prev.level))
     if args.child:
         child(args.child[0], args.child[1], reps, done)
