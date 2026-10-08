@@ -1,0 +1,11 @@
+probe,classical,n,rho_classical,partial_rho_given_probe,mae_probe_only,mae_probe_plus_classical
+tabpfn_auc,thesis_manual_score,77,0.05507650244492349,-0.14099306627324845,,
+tabpfn_auc,icirca_dqi,77,0.005077639723837542,-0.07621979897691579,,
+tabpfn_auc,dreamer_Total Quality,71,0.1951223601876099,0.1200622130061638,,
+tabpfn_auc,aidrin_completeness,77,0.22146764764786694,-0.22038421023130927,,
+tabpfn_auc,LOO linear regression,71,,,0.022971088779311487,0.025260514729046238
+lm_logreg_auc,thesis_manual_score,80,0.06404125644631974,0.14367727804993854,,
+lm_logreg_auc,icirca_dqi,80,0.019846936175881822,0.13299451025267375,,
+lm_logreg_auc,dreamer_Total Quality,71,0.1951223601876099,0.17472584706959687,,
+lm_logreg_auc,aidrin_completeness,80,0.23229495237182052,0.015460673632981977,,
+lm_logreg_auc,LOO linear regression,71,,,0.048893153454686714,0.05239070653887562

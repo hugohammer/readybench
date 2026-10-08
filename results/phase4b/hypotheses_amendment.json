@@ -1,0 +1,131 @@
+{
+  "n_primary": 80,
+  "n_with_secondary": 80,
+  "ap": {
+    "H1_rule": {
+      "composites": {
+        "thesis_manual_score": {
+          "rho": 0.4158696671354899,
+          "lo": 0.20107316770501826,
+          "hi": 0.5979195599864205,
+          "n": 80.0
+        },
+        "icirca_dqi": {
+          "rho": 0.40252990923007953,
+          "lo": 0.20712283731179418,
+          "hi": 0.5660796981476527,
+          "n": 80.0
+        }
+      },
+      "share_Q_abs_rho_below_0.3": 0.75,
+      "supported": false
+    },
+    "H2_procedure": {
+      "best_T": "lm_nn1_auc",
+      "best_Q": "aidrin_row_completeness",
+      "n_test": 56,
+      "rho_diff": 0.6158565403796057,
+      "lo": 0.3601167557730345,
+      "hi": 0.8726840249380557,
+      "supported": true
+    }
+  },
+  "P1": {
+    "aidrin_imbalance_degree": {
+      "rho": 0.4681457265655763,
+      "lo": 0.27634362336293894,
+      "hi": 0.631672277956676
+    },
+    "thesis_c2_balance": {
+      "rho": 0.4648867364322255,
+      "lo": 0.2645569820621803,
+      "hi": 0.63036520288711
+    },
+    "supported": true
+  },
+  "nap": {
+    "H1_rule": {
+      "composites": {
+        "thesis_manual_score": {
+          "rho": 0.30972808251289263,
+          "lo": 0.0763196961975672,
+          "hi": 0.5170878512741848,
+          "n": 80.0
+        },
+        "icirca_dqi": {
+          "rho": 0.2871718090868808,
+          "lo": 0.06927792974587785,
+          "hi": 0.4802889298487115,
+          "n": 80.0
+        }
+      },
+      "share_Q_abs_rho_below_0.3": 0.9375,
+      "supported": false
+    },
+    "H2_procedure": {
+      "best_T": "lm_nn1_auc",
+      "best_Q": "aidrin_row_completeness",
+      "n_test": 56,
+      "rho_diff": 0.6442503021715361,
+      "lo": 0.3895558995039913,
+      "hi": 0.8981606227772106,
+      "supported": true
+    }
+  },
+  "ig": {
+    "H1_rule": {
+      "composites": {
+        "thesis_manual_score": {
+          "rho": 0.13696671354899204,
+          "lo": -0.11066738882977084,
+          "hi": 0.3693448859956066,
+          "n": 80.0
+        },
+        "icirca_dqi": {
+          "rho": 0.09844269474255138,
+          "lo": -0.12188998731580163,
+          "hi": 0.3058527238027406,
+          "n": 80.0
+        }
+      },
+      "share_Q_abs_rho_below_0.3": 1.0,
+      "supported": true
+    },
+    "H2_procedure": {
+      "best_T": "tabpfn_auc",
+      "best_Q": "aidrin_outliers",
+      "n_test": 53,
+      "rho_diff": 1.0149565021914928,
+      "lo": 0.6616661847064699,
+      "hi": 1.3129684805642892,
+      "supported": true
+    }
+  },
+  "P2": {
+    "supported": false
+  },
+  "P3": {
+    "supported": true
+  },
+  "P4": {
+    "emp345_mean_auc": {
+      "rho": 0.8587633885102239,
+      "lo": 0.7295491154635758,
+      "hi": 0.9364947127058609,
+      "n": 79.0
+    },
+    "emp_mean_auc": {
+      "rho": 0.8820593962999026,
+      "lo": 0.7615566028220229,
+      "hi": 0.9543069639647627,
+      "n": 79.0
+    },
+    "emp345_mean_macro_f1": {
+      "rho": 0.7847127555988316,
+      "lo": 0.6354520392353669,
+      "hi": 0.88646481018092,
+      "n": 79.0
+    },
+    "supported": true
+  }
+}
