@@ -77,7 +77,8 @@ def main() -> None:
     done = set()
     if OUT.exists():
         prev = pd.read_csv(OUT)
-        prev = prev[prev.error.isna() | (prev.error == "") | prev.error.str.startswith("timeout")]
+        err = prev.error.fillna("").astype(str)
+        prev = prev[(err == "") | err.str.startswith("timeout")]
         done = set(zip(prev.did, prev.rep, prev.dtype, prev.level))
     if args.child:
         child(args.child[0], args.child[1], reps, done)
