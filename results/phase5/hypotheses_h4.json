@@ -1,0 +1,25 @@
+{
+  "H4a": {
+    "share_reacting": 0.9047619047619048,
+    "n_pairs": 21,
+    "supported": true
+  },
+  "H4b": {
+    "share_not_proportional": 0.19047619047619047,
+    "supported": false
+  },
+  "H4c": {
+    "harmless_types": [
+      "duplicates",
+      "irrelevant",
+      "outliers"
+    ],
+    "testable": true,
+    "false_alarms": [],
+    "supported": false
+  },
+  "tracking_auc": {
+    "median_Q": 0.05077516266162781,
+    "median_T": 0.35545863365365404
+  }
+}

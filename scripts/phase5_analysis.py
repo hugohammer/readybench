@@ -53,6 +53,11 @@ def load(run_dirs: list[Path]) -> tuple[pd.DataFrame, pd.DataFrame]:
         perf.append(pd.read_csv(base / "perf.csv"))
         meas.append(pd.read_csv(base / "measures.csv"))
     keys = ["did", "rep", "dtype", "level"]
+    tabpfn = ROOT / "results" / "raw" / "studyB_tabpfn_nofp.csv"  # local GPU run (reps 0-2), plan B4
+    if tabpfn.exists():
+        t = pd.read_csv(tabpfn)
+        t = t[t.error.fillna("").astype(str) == ""]
+        meas.append(t[keys + ["tabpfn_auc"]].rename(columns={"tabpfn_auc": "value"}).assign(measure="tabpfn_auc"))
     perf = pd.concat(perf).drop_duplicates(keys, keep="last")
     meas = pd.concat(meas).drop_duplicates(keys + ["measure"], keep="last")
     return perf, meas
