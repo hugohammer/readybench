@@ -33,9 +33,9 @@ FAMILY = {"classical": ("Classical quality / readiness scores", BLUE),
           "probe": ("Target-aware probes", AQUA)}
 
 LABEL = {
-    "thesis_manual_score": "Thesis manual score (C1–C4)", "thesis_c1_completeness": "Thesis C1 completeness",
-    "thesis_c2_balance": "Thesis C2 class balance", "thesis_c3_sample_size": "Thesis C3 sample size",
-    "thesis_c4_feature_quality": "Thesis C4 feature quality", "icirca_dqi": "ICIRCA quality index (DQI)",
+    "thesis_manual_score": "Composite quality score (CQS)", "thesis_c1_completeness": "CQS C1 completeness",
+    "thesis_c2_balance": "CQS C2 class balance", "thesis_c3_sample_size": "CQS C3 sample size",
+    "thesis_c4_feature_quality": "CQS C4 feature quality", "icirca_dqi": "ICIRCA quality index (DQI)",
     "aidrin_completeness": "AIDRIN completeness", "aidrin_duplicity": "AIDRIN duplicity",
     "aidrin_outliers": "AIDRIN outliers", "aidrin_imbalance_degree": "AIDRIN imbalance degree",
     "aidrin_max_pairwise_corr": "AIDRIN max pairwise correlation", "dreamer_Total Quality": "DREAMER total quality",
@@ -44,7 +44,7 @@ LABEL = {
     "rel_max_norm_mi": "Max mutual information (normalized)", "lm_stump_auc": "Landmarker: decision stump",
     "lm_naive_bayes_auc": "Landmarker: naive Bayes", "lm_logreg_auc": "Landmarker: logistic regression",
     "lm_nn1_auc": "Landmarker: 1-nearest neighbour", "tabpfn_auc": "TabPFN probe",
-    "emp_mean_auc": "Thesis empirical score (5 baselines)", "empcv_mean_auc": "Thesis empirical score (5 baselines)",
+    "emp_mean_auc": "Baseline ensemble score (BES)", "empcv_mean_auc": "Baseline ensemble score (BES)",
 }
 FIG1 = ["icirca_dqi", "thesis_manual_score", "thesis_c1_completeness", "thesis_c2_balance", "thesis_c3_sample_size",
         "thesis_c4_feature_quality", "aidrin_completeness", "aidrin_duplicity", "aidrin_outliers",
@@ -100,18 +100,18 @@ def fig2(out: Path) -> None:
     rho = pd.read_csv(ROOT / "results" / "phase4" / "rho_primary.csv").set_index("measure").rho
     t = pd.read_csv(ROOT / "results" / "phase4b" / "timing_common_hardware.csv").set_index("group").median_s
     groups = [  # (timing group, representative measure, label)
-        ("icirca", "icirca_dqi", "ICIRCA DQI"), ("thesis", "thesis_manual_score", "Thesis manual score"),
+        ("icirca", "icirca_dqi", "ICIRCA DQI"), ("thesis", "thesis_manual_score", "Composite quality score (CQS)"),
         ("dreamer_100x10", "dreamer_Total Quality", "DREAMER (extrapolated)"),
         ("aidrin", "aidrin_relevance_max", "AIDRIN (best metric)"), ("complexity", "cx_n3", "Complexity (best: N3)"),
         ("relevance", "rel_max_norm_mi", "Relevance (best: MI)"), ("landmarkers", "lm_nn1_auc", "Landmarkers (best: 1-NN)"),
-        ("empirical", "emp_mean_auc", "Thesis empirical score"), ("tabpfn_cpu", "tabpfn_auc", "TabPFN (1 CPU core)"),
+        ("empirical", "emp_mean_auc", "Baseline ensemble score (BES)"), ("tabpfn_cpu", "tabpfn_auc", "TabPFN (1 CPU core)"),
     ]
     fig, ax = plt.subplots(figsize=(6.6, 3.6))
     for g, m, lab in groups:
         fam = family(m)
         x = max(t[g], 0.01)
         ax.plot(x, rho[m], "o", color=FAMILY[fam][1], markersize=8, markeredgecolor=SURFACE, markeredgewidth=1.5)
-        off = {"TabPFN (1 CPU core)": (7, 2), "Thesis empirical score": (7, -9),
+        off = {"TabPFN (1 CPU core)": (7, 2), "Baseline ensemble score (BES)": (7, -9),
                "Landmarkers (best: 1-NN)": (-6, 6), "Relevance (best: MI)": (-6, -11)}.get(lab, (7, -3))
         ax.annotate(lab, (x, rho[m]), xytext=off, textcoords="offset points", fontsize=7.5, color=INK,
                     ha="right" if off[0] < 0 else "left")
@@ -160,7 +160,7 @@ def fig4(out: Path, order: list[str]) -> None:
     p = pd.read_csv(ROOT / "outputs" / "phase5_analysis" / "perf_long.csv")
     rows = ["aidrin_completeness", "aidrin_duplicity", "aidrin_outliers", "aidrin_imbalance_degree",
             "thesis_c3_sample_size", "thesis_manual_score", "icirca_dqi", "rel_max_norm_mi", "lm_nn1_auc", "tabpfn_auc"]
-    lab = {**LABEL, "thesis_c3_sample_size": "Thesis C3 sample size"}
+    lab = {**LABEL, "thesis_c3_sample_size": "CQS C3 sample size"}
     h = m[(m.level == 5) & m.measure.isin(rows)].groupby(["measure", "dtype"]).dm.median().unstack().loc[rows, order]
     harm = p[p.level == 5].groupby("dtype").d_auc.median()[order]
 
