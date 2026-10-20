@@ -30,7 +30,7 @@ BLUE, ORANGE, AQUA = "#2a78d6", "#eb6834", "#1baf7a"
 INK, INK2, GRID, SURFACE = "#0b0b0b", "#52514e", "#e4e3df", "#ffffff"
 FAMILY = {"classical": ("Classical quality / readiness scores", BLUE),
           "other": ("Complexity & tool relevance", ORANGE),
-          "probe": ("Target-aware probes", AQUA)}
+          "probe": ("Target-aware measures", AQUA)}
 
 LABEL = {
     "thesis_manual_score": "Composite quality score (CQS)", "thesis_c1_completeness": "CQS C1 completeness",
@@ -43,7 +43,7 @@ LABEL = {
     "cx_f1": "Complexity F1 (Fisher ratio)", "rel_max_single_auc": "Best single-feature AUC",
     "rel_max_norm_mi": "Max mutual information (normalized)", "lm_stump_auc": "Landmarker: decision stump",
     "lm_naive_bayes_auc": "Landmarker: naive Bayes", "lm_logreg_auc": "Landmarker: logistic regression",
-    "lm_nn1_auc": "Landmarker: 1-nearest neighbour", "tabpfn_auc": "TabPFN probe",
+    "lm_nn1_auc": "Landmarker: 1-nearest neighbour", "tabpfn_auc": "TabPFN",
     "emp_mean_auc": "Baseline ensemble score (BES)", "empcv_mean_auc": "Baseline ensemble score (BES)",
 }
 FIG1 = ["icirca_dqi", "thesis_manual_score", "thesis_c1_completeness", "thesis_c2_balance", "thesis_c3_sample_size",
@@ -170,7 +170,7 @@ def fig4(out: Path, order: list[str]) -> None:
     a0.set_ylabel("ΔAUC", fontsize=8, color=INK)
     a0.axhline(0, color=INK2, linewidth=0.8)
     style(a0, "y")
-    a0.set_title("Harm caused (top) and how much each measure reacts (bottom), most severe level", fontsize=8.5,
+    a0.set_title("Performance loss (top) and change in each measure (bottom), most severe level", fontsize=8.5,
                  color=INK, loc="left")
     cmap = LinearSegmentedColormap.from_list("div", ["#e34948", "#f0efec", BLUE])
     lim = 4.5
