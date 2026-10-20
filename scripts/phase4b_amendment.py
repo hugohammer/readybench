@@ -160,8 +160,12 @@ def main() -> None:
         is_dreamer = t.group == "dreamer_100x10"
         t.loc[is_dreamer & t.did.map(flags).eq(False), "status"] = "limit"
         t.to_csv(OUT / "timing_benchmark_corrected.csv", index=False)
+        # errors are not runtimes (e.g. TabPFN refusing large data on CPU); limit rows stay in as lower bounds
+        n_error = t[t.status.str.startswith("error")].groupby("group").size()
+        t = t[~t.status.str.startswith("error")]
         summary = t.groupby("group").agg(n=("did", "nunique"), median_s=("seconds", "median"),
                                          max_s=("seconds", "max"), n_limit=("status", lambda s: (s == "limit").sum()))
+        summary["n_error"] = n_error.reindex(summary.index).fillna(0).astype(int)
         summary.sort_values("median_s").to_csv(OUT / "timing_common_hardware.csv")
 
     (OUT / "hypotheses_amendment.json").write_text(json.dumps(result, indent=2, default=float))

@@ -2,7 +2,7 @@
 
   python scripts/make_figures.py [--out DIR]
 Fig. 1  agreement of each measure with the gold standard (Study A)
-Fig. 2  cost vs agreement per measure group (single-core timing, A4)
+Fig. 2  agreement vs runtime per measure group (single core; TabPFN also on GPU)
 Fig. 3  harm of each degradation (Study B, median dAUC at level 5)
 Fig. 4  reaction of measures to each degradation vs the harm it causes (Study B)
 
@@ -96,29 +96,51 @@ def fig1(out: Path) -> None:
     plt.close(fig)
 
 
+GROUPS = [  # (benchmark group, representative measure, label)
+    ("icirca", "icirca_dqi", "ICIRCA DQI"), ("thesis", "thesis_manual_score", "Composite quality score (CQS)"),
+    ("dreamer", "dreamer_Total Quality", "DREAMER"),
+    ("aidrin", "aidrin_relevance_max", "AIDRIN (best metric)"), ("complexity", "cx_n3", "Complexity (best: N3)"),
+    ("relevance", "rel_max_norm_mi", "Relevance (best: MI)"), ("landmarkers", "lm_nn1_auc", "Landmarkers (best: 1-NN)"),
+    ("empirical", "emp_mean_auc", "Baseline ensemble score (BES)"), ("tabpfn_cpu", "tabpfn_auc", "TabPFN (1 CPU core)"),
+    ("tabpfn_cuda", "tabpfn_auc", "TabPFN (GPU)"),
+]
+
+
+def runtimes() -> pd.Series:
+    """Median seconds per group on the common machine (timing benchmark, A4; error rows excluded,
+    rows that hit the limit kept as lower bounds). TabPFN on one CPU core: if the timing rerun has not
+    yet replaced its failed rows, use the single-core runs of the memory benchmark (phase4d) instead."""
+    t = pd.read_csv(ROOT / "results" / "raw" / "timing_benchmark.csv")
+    t = t[~t.status.str.startswith("error")]
+    med = t.groupby("group").seconds.median()
+    med["dreamer"] = med.pop("dreamer_100x10")  # 100 subtables, extrapolated x10 to the 1,000 used in Study A
+    if (t.group == "tabpfn_cpu").sum() < t.did.nunique():
+        m = pd.read_csv(ROOT / "results" / "raw" / "memory_benchmark.csv")
+        m = m[(m.group == "tabpfn_cpu") & m.status.isin(["ok", "limit"])]
+        med["tabpfn_cpu"] = m.seconds.median()
+        print(f"fig2: TabPFN CPU from the memory benchmark ({len(m)} datasets, provisional)")
+    return med
+
+
 def fig2(out: Path) -> None:
+    """Agreement vs median runtime per measure group (one CPU core; TabPFN also on the GPU)."""
     rho = pd.read_csv(ROOT / "results" / "phase4" / "rho_primary.csv").set_index("measure").rho
-    t = pd.read_csv(ROOT / "results" / "phase4b" / "timing_common_hardware.csv").set_index("group").median_s
-    groups = [  # (timing group, representative measure, label)
-        ("icirca", "icirca_dqi", "ICIRCA DQI"), ("thesis", "thesis_manual_score", "Composite quality score (CQS)"),
-        ("dreamer_100x10", "dreamer_Total Quality", "DREAMER (extrapolated)"),
-        ("aidrin", "aidrin_relevance_max", "AIDRIN (best metric)"), ("complexity", "cx_n3", "Complexity (best: N3)"),
-        ("relevance", "rel_max_norm_mi", "Relevance (best: MI)"), ("landmarkers", "lm_nn1_auc", "Landmarkers (best: 1-NN)"),
-        ("empirical", "emp_mean_auc", "Baseline ensemble score (BES)"), ("tabpfn_cpu", "tabpfn_auc", "TabPFN (1 CPU core)"),
-    ]
+    t = runtimes()
     fig, ax = plt.subplots(figsize=(6.6, 3.6))
-    for g, m, lab in groups:
-        fam = family(m)
+    offsets = {"TabPFN (1 CPU core)": (7, -3), "TabPFN (GPU)": (-7, 4), "Baseline ensemble score (BES)": (7, -9),
+               "Landmarkers (best: 1-NN)": (-6, 6), "Relevance (best: MI)": (-6, -11), "DREAMER": (-7, 6)}
+    for g, m, lab in GROUPS:
         x = max(t[g], 0.01)
-        ax.plot(x, rho[m], "o", color=FAMILY[fam][1], markersize=8, markeredgecolor=SURFACE, markeredgewidth=1.5)
-        off = {"TabPFN (1 CPU core)": (7, 2), "Baseline ensemble score (BES)": (7, -9),
-               "Landmarkers (best: 1-NN)": (-6, 6), "Relevance (best: MI)": (-6, -11)}.get(lab, (7, -3))
+        gpu = g == "tabpfn_cuda"  # hollow marker: same measure, other hardware
+        ax.plot(x, rho[m], "o", color=FAMILY[family(m)][1], markersize=8, markeredgewidth=1.5,
+                markeredgecolor=FAMILY[family(m)][1] if gpu else SURFACE, markerfacecolor=SURFACE if gpu else None)
+        off = offsets.get(lab, (7, -3))
         ax.annotate(lab, (x, rho[m]), xytext=off, textcoords="offset points", fontsize=7.5, color=INK,
                     ha="right" if off[0] < 0 else "left")
     ax.set_xscale("log")
     ax.set_xlim(0.006, 30000)
     ax.set_ylim(-0.1, 1.0)
-    ax.set_xlabel("Median seconds per dataset on one CPU core (log scale)", fontsize=8.5, color=INK)
+    ax.set_xlabel("Median seconds per dataset (log scale)", fontsize=8.5, color=INK)
     ax.set_ylabel("Agreement with gold standard (ρ)", fontsize=8.5, color=INK)
     style(ax, "both")
     handles = [plt.Line2D([], [], marker="o", linestyle="", color=c, markersize=7, label=n) for n, c in FAMILY.values()]
