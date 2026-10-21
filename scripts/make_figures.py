@@ -101,7 +101,7 @@ GROUPS = [  # (benchmark group, representative measure, label)
     ("dreamer", "dreamer_Total Quality", "DREAMER"),
     ("aidrin", "aidrin_relevance_max", "AIDRIN (best metric)"), ("complexity", "cx_n3", "Complexity (best: N3)"),
     ("relevance", "rel_max_norm_mi", "Relevance (best: MI)"), ("landmarkers", "lm_nn1_auc", "Landmarkers (best: 1-NN)"),
-    ("empirical", "emp_mean_auc", "Baseline ensemble score (BES)"), ("tabpfn_cpu", "tabpfn_auc", "TabPFN (1 CPU core)"),
+    ("empirical", "emp_mean_auc", "Baseline ensemble score (BES)"), ("tabpfn_cpu", "tabpfn_auc", "TabPFN (1 CPU core,\n> 20 min)"),
     ("tabpfn_cuda", "tabpfn_auc", "TabPFN (GPU)"),
 ]
 
@@ -127,16 +127,16 @@ def fig2(out: Path) -> None:
     rho = pd.read_csv(ROOT / "results" / "phase4" / "rho_primary.csv").set_index("measure").rho
     t = runtimes()
     fig, ax = plt.subplots(figsize=(6.6, 3.6))
-    offsets = {"TabPFN (1 CPU core)": (7, -3), "TabPFN (GPU)": (-7, 4), "Baseline ensemble score (BES)": (7, -9),
+    offsets = {"TabPFN (1 CPU core,\n> 20 min)": (0, -22), "TabPFN (GPU)": (-7, 4), "Baseline ensemble score (BES)": (7, -9),
                "Landmarkers (best: 1-NN)": (-6, 6), "Relevance (best: MI)": (-6, -11), "DREAMER": (-7, 6)}
     for g, m, lab in GROUPS:
-        x = max(t[g], 0.01)
+        x = max(t[g], 0.01)  # TabPFN on one CPU core: the median run hit the 20-minute limit (a lower bound)
         gpu = g == "tabpfn_cuda"  # hollow marker: same measure, other hardware
         ax.plot(x, rho[m], "o", color=FAMILY[family(m)][1], markersize=8, markeredgewidth=1.5,
                 markeredgecolor=FAMILY[family(m)][1] if gpu else SURFACE, markerfacecolor=SURFACE if gpu else None)
         off = offsets.get(lab, (7, -3))
         ax.annotate(lab, (x, rho[m]), xytext=off, textcoords="offset points", fontsize=7.5, color=INK,
-                    ha="right" if off[0] < 0 else "left")
+                    ha="right" if off[0] < 0 else "center" if off[0] == 0 else "left")
     ax.set_xscale("log")
     ax.set_xlim(0.006, 30000)
     ax.set_ylim(-0.1, 1.0)

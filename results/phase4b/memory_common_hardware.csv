@@ -1,0 +1,11 @@
+group,n,median_mb,max_mb,n_limit
+load,19,203.7,468.3,0
+icirca,19,208.7,605.6,0
+thesis,19,213.2,1171.7,0
+relevance,19,223.1,806.5,0
+landmarkers,19,224.2,534.4,0
+aidrin,19,348.8,10876.5,0
+empirical,19,383.0,1530.1,0
+dreamer,19,633.2,829.0,0
+tabpfn_cpu,19,1109.3,6186.9,12
+complexity,19,1695.7,2000.8,0

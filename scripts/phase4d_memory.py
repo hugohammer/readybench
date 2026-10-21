@@ -18,7 +18,7 @@ benchmark used 100). A watchdog kills any process tree above --cap-gb
 (status "cap").
 
   taskset -c 0 .venv/bin/python scripts/phase4d_memory.py
-Writes results/raw/memory_benchmark.csv (resumable).
+Writes results/raw/memory_benchmark.csv (resumable); --summary writes results/phase4b/memory_common_hardware.csv.
 """
 
 import argparse
@@ -97,12 +97,27 @@ def measure(cmd: list[str], env: dict, limit_s: float, cap_bytes: float) -> dict
             "seconds": time.perf_counter() - start, "status": status}
 
 
+def summarize() -> None:
+    import pandas as pd
+
+    m = pd.read_csv(OUT)
+    m = m[m.status.isin(["ok", "limit"])]  # limit: the peak until the time limit (a lower bound)
+    s = m.groupby("group").agg(n=("did", "nunique"), median_mb=("peak_mb", "median"), max_mb=("peak_mb", "max"),
+                               n_limit=("status", lambda x: (x == "limit").sum()))
+    s.sort_values("median_mb").round(1).to_csv(ROOT / "results" / "phase4b" / "memory_common_hardware.csv")
+    print(s.sort_values("median_mb").round(0).to_string())
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--child", nargs=3, metavar=("DID", "TID", "GROUP"))
     ap.add_argument("--limit-min", type=float, default=20)
     ap.add_argument("--cap-gb", type=float, default=12)
+    ap.add_argument("--summary", action="store_true", help="only write results/phase4b/memory_common_hardware.csv")
     args = ap.parse_args()
+    if args.summary:
+        summarize()
+        return
     if args.child:
         child(int(args.child[0]), int(args.child[1]), args.child[2])
         return
