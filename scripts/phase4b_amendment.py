@@ -152,11 +152,8 @@ def main() -> None:
     if tb.exists():
         t = pd.read_csv(tb)
         # DREAMER's own timeout exits normally: its result rows (scratch/timing_dreamer) say ok=False
-        flags = {}
-        for f in sorted((ROOT / "scratch" / "timing_dreamer").glob("*.csv")):
-            r = pd.read_csv(f)
-            if len(r):
-                flags[int(r.did.iloc[0])] = bool(r.ok.iloc[0])
+        # (one row per dataset, collected from scratch/timing_dreamer into results/raw/timing_dreamer_ok.csv)
+        flags = pd.read_csv(ROOT / "results" / "raw" / "timing_dreamer_ok.csv").set_index("did").ok.to_dict()
         is_dreamer = t.group == "dreamer_100x10"
         t.loc[is_dreamer & t.did.map(flags).eq(False), "status"] = "limit"
         t.to_csv(OUT / "timing_benchmark_corrected.csv", index=False)

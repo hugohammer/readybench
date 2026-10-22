@@ -13,6 +13,26 @@ The pre-registered plan is in `docs/analysis_plan.md`:
 
 Phase reports are in `docs/phase*_report.md`.
 
+## Paper
+
+Kemi, J. L. and Hammer, H. L. *Evaluation of Readiness Measures to Predict Machine Learning Prediction Performance.* Manuscript in preparation for the Journal of Data-centric Machine Learning Research (DMLR), 2026.
+How to cite this code: see `CITATION.cff` (GitHub's "Cite this repository" button) and the Zenodo DOI of the release.
+
+## Reproducing the analyses from the committed results
+
+All results that the paper reports are in `results/`. The analyses and figures can be rerun from these files alone, without downloading any datasets or retraining any models:
+
+```bash
+uv venv .venv --python 3.12 && uv pip sync requirements.lock   # or: python -m venv .venv && .venv/bin/pip install -r requirements.lock
+export PYTHONPATH=src
+.venv/bin/python scripts/phase4_analysis.py                       # Study A: H1-H3, feasibility, sensitivity -> outputs/phase4/
+.venv/bin/python scripts/phase4b_amendment.py                     # amendment: AP/nAP/IG, folds 3-5, timing -> outputs/phase4b/
+.venv/bin/python scripts/phase5_analysis.py results/raw/studyB/*  # Study B: H4 and tracking -> outputs/phase5_analysis/
+.venv/bin/python scripts/make_figures.py                          # Figures 1-4 -> outputs/figures/
+```
+
+Rerunning the full experiments (gold standard, measures, Study B) downloads the datasets from OpenML and needs considerable compute; see the pipeline below.
+
 ## Pipeline
 
 | Phase | Scripts | Main outputs |
@@ -45,3 +65,9 @@ Pipelines run only when started on purpose:
 ```
 
 This needs `tools/gitlab.env` (gitignored) with an `api` token. Caches go to `data_cache/` (not tracked); set `READYBENCH_ROOT` to relocate them.
+
+## Licence and third-party code
+
+The code in this repository is released under the MIT licence (`LICENSE`).
+`third_party/dreamer/` contains the DREAMER code (Ahangaran et al., 2024), vendored unchanged under its own MIT licence; see `third_party/dreamer/SOURCE.txt`.
+The datasets are not included. They are downloaded from OpenML (https://www.openml.org) under their own licences, and the TabRepo tables from Hugging Face (`Tabrepo/tabrepo`).
